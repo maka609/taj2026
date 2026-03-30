@@ -1,0 +1,52 @@
+'use server'
+
+import prisma from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const testimonialSchema = z.object({
+  parentName: z.string().min(3),
+  contentAr: z.string().min(10),
+  contentEn: z.string().min(10),
+  rating: z.number().int().min(1).max(5).default(5),
+  approved: z.boolean().default(false),
+})
+
+export async function getTestimonials(filter?: 'all' | 'approved' | 'pending') {
+  try {
+    const where = filter === 'approved' ? { approved: true } : filter === 'pending' ? { approved: false } : {}
+    const testimonials = await prisma.testimonial.findMany({
+      where,
+      orderBy: { createdAt: 'desc' }
+    })
+    return { success: true, data: testimonials }
+  } catch (error) {
+    console.error('Error fetching testimonials:', error)
+    return { success: false, error: 'فشل في جلب البيانات' }
+  }
+}
+
+export async function approveTestimonial(id: string) {
+  try {
+    await prisma.testimonial.update({
+      where: { id },
+      data: { approved: true }
+    })
+    revalidatePath('/admin/testimonials')
+    return { success: true }
+  } catch (error) {
+    console.error('Error approving testimonial:', error)
+    return { success: false, error: 'فشل في الموافقة' }
+  }
+}
+
+export async function deleteTestimonial(id: string) {
+  try {
+    await prisma.testimonial.delete({ where: { id } })
+    revalidatePath('/admin/testimonials')
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting testimonial:', error)
+    return { success: false, error: 'فشل في الحذف' }
+  }
+}

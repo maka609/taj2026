@@ -1,0 +1,241 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+  STAFF
+  PARENT
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(STUDENT)
+  
+  // Relations
+  grades               Grade[]
+  admissionApplications AdmissionApplication[] @relation("ParentToAdmission")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  SecurityLog SecurityLog[]
+}
+
+model News {
+  id          String   @id @default(cuid())
+  titleAr     String
+  titleEn     String
+  contentAr   String   @db.Text
+  contentEn   String   @db.Text
+  slug        String   @unique
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  titleAr     String
+  titleEn     String
+  description String?  @db.Text
+  startDate   DateTime
+  endDate     DateTime?
+  color       String?  @default("#3b82f6")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  titleAr     String
+  titleEn     String
+  fileUrl     String
+  category    String   // e.g. "Schedules", "Book Lists"
+  fileSize    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Staff {
+  id          String   @id @default(cuid())
+  nameAr      String
+  nameEn      String
+  roleAr      String
+  roleEn      String
+  department  String?
+  imageUrl    String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  parentName  String
+  contentAr   String   @db.Text
+  contentEn   String   @db.Text
+  rating      Int      @default(5)
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FAQ {
+  id          String   @id @default(cuid())
+  questionAr  String
+  questionEn  String
+  answerAr    String   @db.Text
+  answerEn    String   @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Slider {
+  id          String   @id @default(cuid())
+  imageUrl    String
+  titleAr     String?
+  titleEn     String?
+  link        String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  url         String
+  captionAr   String?
+  captionEn   String?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdmissionApplication {
+  id               String            @id @default(cuid())
+  studentNameAr    String
+  studentNameEn    String
+  gradeApplying    String
+  dateOfBirth      DateTime
+  gender           String
+  parentEmail      String
+  parentPhone      String
+  status           ApplicationStatus @default(PENDING)
+  notes            String?           @db.Text
+  
+  parentId         String?
+  parent           User? @relation("ParentToAdmission", fields: [parentId], references: [id])
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Career {
+  id            String   @id @default(cuid())
+  titleAr       String
+  titleEn       String
+  descriptionAr String   @db.Text
+  descriptionEn String   @db.Text
+  department    String
+  deadline      DateTime?
+  active        Boolean  @default(true)
+  
+  applications JobApplication[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model JobApplication {
+  id          String            @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  cvUrl       String
+  coverLetter String?           @db.Text
+  status      ApplicationStatus @default(PENDING)
+  
+  careerId    String
+  career      Career @relation(fields: [careerId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Grade {
+  id        String   @id @default(cuid())
+  subject   String
+  score     Float
+  maxScore  Float
+  semester  String
+  year      String
+  
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model SecurityLog {
+  id        String   @id @default(cuid())
+  action    String
+  ip        String?
+  details   String?
+  
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+}
+
+model Backup {
+  id        String   @id @default(cuid())
+  label     String
+  fileUrl   String
+  createdAt DateTime @default(now())
+}

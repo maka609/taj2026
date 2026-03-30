@@ -1,0 +1,22 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "news": "News",
+    "contact": "Contact Us",
+    "faq": "FAQ",
+    "staff": "Staff",
+    "calendar": "Calendar",
+    "downloads": "Downloads",
+    "careers": "Careers",
+    "admission": "Admissions",
+    "portal": "Student Portal"
+  },
+  "Common": {
+    "welcome": "Welcome to Taj El-Nozha Schools",
+    "login": "Login",
+    "logout": "Logout",
+    "backToSite": "Back to site",
+    "adminPanel": "Admin Dashboard"
+  }
+}
