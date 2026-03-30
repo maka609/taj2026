@@ -12,6 +12,9 @@ const particlePositions = Array.from({ length: 30 }, (_, i) => ({
   duration: 3 + (i * 0.7) % 7,
 }));
 
+// Track if splash was shown in this session
+let splashShownInSession = false;
+
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
@@ -22,17 +25,15 @@ export default function SplashScreen() {
   useEffect(() => {
     setIsMounted(true);
     
-    // Check if user has already seen the splash screen
-    const hasSeenSplash = localStorage.getItem('hasSeenSplash');
-    
-    if (hasSeenSplash === 'true') {
-      // User has seen splash before, don't show it
+    // Check if splash was already shown in this session
+    if (splashShownInSession) {
       setIsVisible(false);
       return;
     }
     
-    // First time visitor, show splash
+    // Show splash for this session
     setIsVisible(true);
+    splashShownInSession = true;
     
     // Show language buttons after 2 seconds
     const buttonTimer = setTimeout(() => {
@@ -45,9 +46,6 @@ export default function SplashScreen() {
   }, []);
 
   const handleLanguageSelect = (locale: string) => {
-    // Mark that user has seen the splash screen
-    localStorage.setItem('hasSeenSplash', 'true');
-    
     setIsVisible(false);
     
     // Check if we need to change language
