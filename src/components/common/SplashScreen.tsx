@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { GraduationCap, Sparkles, Globe } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 // Generate static positions for particles to avoid hydration mismatch
 const particlePositions = Array.from({ length: 30 }, (_, i) => ({
@@ -17,6 +17,7 @@ export default function SplashScreen() {
   const [showButtons, setShowButtons] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsMounted(true);
@@ -48,9 +49,14 @@ export default function SplashScreen() {
     localStorage.setItem('hasSeenSplash', 'true');
     
     setIsVisible(false);
-    setTimeout(() => {
-      router.push(`/${locale}`);
-    }, 500);
+    
+    // Check if we need to change language
+    const currentLocale = pathname.split('/')[1];
+    if (currentLocale !== locale) {
+      setTimeout(() => {
+        router.push(`/${locale}`);
+      }, 500);
+    }
   };
 
   if (!isMounted || !isVisible) return null;
