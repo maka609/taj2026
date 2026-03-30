@@ -16,7 +16,8 @@ export default function StaffPage() {
     roleAr: '',
     roleEn: '',
     department: '',
-    imageUrl: ''
+    imageUrl: '',
+    order: 0
   });
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export default function StaffPage() {
       setStaff(updatedStaff || []);
       
       setShowModal(false);
-      setFormData({ nameAr: '', nameEn: '', roleAr: '', roleEn: '', department: '', imageUrl: '' });
+      setFormData({ nameAr: '', nameEn: '', roleAr: '', roleEn: '', department: '', imageUrl: '', order: 0 });
       alert('تم إضافة العضو بنجاح! ✅');
     } else {
       alert(result.error || 'فشل في الإضافة');
@@ -194,6 +195,18 @@ export default function StaffPage() {
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="مثال: اللغة العربية"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ترتيب العرض</label>
+                <input
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="0"
+                  min="0"
                 />
               </div>
 
