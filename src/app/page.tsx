@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+"use client";
+
+import SplashScreen from '@/components/common/SplashScreen';
 
 export default function RootPage() {
-  redirect('/ar');
+  return <SplashScreen />;
 }

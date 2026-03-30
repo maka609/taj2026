@@ -3,16 +3,13 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { BookOpen, Users, Calendar, Download } from 'lucide-react';
-import SplashScreen from '@/components/common/SplashScreen';
 
 export default function HomePage() {
   const t = useTranslations('Navigation');
   const common = useTranslations('Common');
 
   return (
-    <>
-      <SplashScreen />
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <main className="pt-20">
         <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-gray-900">
@@ -72,6 +69,5 @@ export default function HomePage() {
         </section>
       </main>
     </div>
-    </>
   );
 }

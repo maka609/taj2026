@@ -13,13 +13,25 @@ const particlePositions = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Check if user has already seen the splash screen
+    const hasSeenSplash = localStorage.getItem('hasSeenSplash');
+    
+    if (hasSeenSplash === 'true') {
+      // User has seen splash before, don't show it
+      setIsVisible(false);
+      return;
+    }
+    
+    // First time visitor, show splash
+    setIsVisible(true);
     
     // Show language buttons after 2 seconds
     const buttonTimer = setTimeout(() => {
@@ -32,6 +44,9 @@ export default function SplashScreen() {
   }, []);
 
   const handleLanguageSelect = (locale: string) => {
+    // Mark that user has seen the splash screen
+    localStorage.setItem('hasSeenSplash', 'true');
+    
     setIsVisible(false);
     setTimeout(() => {
       router.push(`/${locale}`);
