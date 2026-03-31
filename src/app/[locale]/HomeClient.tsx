@@ -20,7 +20,8 @@ import {
   Play,
   Sparkles,
   ShieldCheck,
-  Star
+  Star,
+  TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
