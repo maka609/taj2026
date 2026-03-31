@@ -31,6 +31,8 @@ export default function LoginPage() {
       const result = await loginAction(formData);
       if (result?.error) {
         setErrorMsg(result.error);
+      } else if (result?.success) {
+        window.location.href = `/${locale}/admin`;
       }
     } catch (err) {
       console.log(err);

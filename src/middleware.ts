@@ -16,8 +16,12 @@ export default auth((req: NextRequest & { auth: any }) => {
   // Get locale from cookie
   const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
 
-  // Bypass for Admin if logged in or allow temporarily
+  // Strict Security for Admin Pages
   if (isAdminPage) {
+    if (!isAuth || req.auth.role !== 'ADMIN') {
+      const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
+      return Response.redirect(new URL(`/${locale}/portal/login`, req.nextUrl));
+    }
     return;
   }
 

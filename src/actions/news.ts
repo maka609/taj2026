@@ -71,7 +71,8 @@ export async function createNews(formData: NewsInput) {
 
 export async function updateNews(id: string, formData: Partial<NewsInput>) {
   try {
-    const { titleAr, titleEn, contentAr, contentEn, imageUrl } = formData;
+    const validated = newsSchema.partial().parse(formData);
+    const { titleAr, titleEn, contentAr, contentEn, imageUrl } = validated;
     
     const updated = await prisma.news.update({
       where: { id },
