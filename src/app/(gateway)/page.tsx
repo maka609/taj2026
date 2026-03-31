@@ -51,23 +51,6 @@ const gatewayVariants: Variants = {
   },
 };
 
-import { Geist, Geist_Mono, Cairo } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const cairo = Cairo({
-  variable: "--font-cairo",
-  subsets: ["arabic", "latin"],
-});
-
 export default function LanguageGateway() {
   const router = useRouter();
   const [showSplash, setShowSplash] = useState(true);
@@ -81,15 +64,11 @@ export default function LanguageGateway() {
     if (hasSeenSplash) {
       setShowSplash(false);
     } else {
-      // Sequence timing:
-      // 0s-1s: Logo reveal
-      // 0.6s-1.6s: Name reveal
-      // 1.6s-3.5s: Static visibility
-      // 3.5s-4.0s: Transition out
+      // Optimized sequence timing: 2.5s total instead of 4s
       const timer = setTimeout(() => {
         setShowSplash(false);
         localStorage.setItem("taj_splash_seen", "true");
-      }, 4000);
+      }, 2500);
 
       return () => clearTimeout(timer);
     }
@@ -107,7 +86,7 @@ export default function LanguageGateway() {
   };
 
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} min-h-screen bg-white bg-gradient-to-b from-white via-white to-blue-50/40 flex items-center justify-center relative overflow-hidden font-sans selection:bg-primary/10 w-full`}>
+    <div className="min-h-screen bg-white bg-gradient-to-b from-white via-white to-blue-50/40 flex items-center justify-center relative overflow-hidden font-sans selection:bg-primary/10 w-full">
       {/* Dynamic Ambient Background */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div

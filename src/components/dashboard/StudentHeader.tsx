@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Search, Bell, Globe, ChevronDown, User, Moon, Sun } from "lucide-react";
+import React, { useState } from "react";
+import { Search, Bell, Globe, ChevronDown, User, Moon, Sun, Menu, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,15 +13,28 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@radix-ui/react-dropdown-menu";
+import { motion, AnimatePresence } from "framer-motion";
+import StudentSidebar from "./StudentSidebar";
 
 export default function StudentHeader() {
   const locale = useLocale();
   const isRtl = locale === "ar";
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="h-20 bg-white/60 backdrop-blur-xl border-b border-border/50 sticky top-0 z-40 px-6 md:px-10 flex items-center justify-between" dir={isRtl ? "rtl" : "ltr"}>
+    <header className="h-20 bg-white/90 backdrop-blur-xl border-b border-border/50 sticky top-0 z-40 px-4 md:px-10 flex items-center justify-between" dir={isRtl ? "rtl" : "ltr"}>
+      {/* Mobile Menu Toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden w-11 h-11 rounded-xl bg-gray-50 border border-gray-100 text-deep-navy active:scale-90 transition-all mr-2 rtl:mr-0 rtl:ml-2"
+        onClick={() => setIsMobileMenuOpen(true)}
+      >
+        <Menu className="w-6 h-6" />
+      </Button>
+
       {/* Search Bar */}
-      <div className="flex-1 max-w-lg relative group">
+      <div className="flex-1 max-w-lg relative group hidden sm:block">
         <Search className={cn("absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors", isRtl ? "right-4" : "left-4")} />
         <Input
           type="search"
@@ -68,6 +81,42 @@ export default function StudentHeader() {
            <ChevronDown className="w-4 h-4 text-gray-400" />
         </div>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] lg:hidden"
+            />
+            <motion.div
+              initial={{ x: isRtl ? '100%' : '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: isRtl ? '100%' : '-100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 right-0 rtl:right-0 ltr:left-0 w-[280px] sm:w-80 bg-white z-[160] lg:hidden shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-4 left-4 rtl:left-4 ltr:right-4 z-50">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              <div className="h-full pt-10">
+                <StudentSidebar />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

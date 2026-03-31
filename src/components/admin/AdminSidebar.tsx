@@ -62,11 +62,13 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile Menu Toggle */}
-      <div className={cn("lg:hidden fixed top-4 z-[60]", isRtl ? "left-4" : "right-4")}>
-         <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)} className="rounded-xl shadow-md bg-white">
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-         </Button>
-      </div>
+      {!isOpen && (
+        <div className={cn("lg:hidden fixed top-4 z-[60]", isRtl ? "left-4" : "right-4")}>
+           <Button variant="outline" size="icon" onClick={() => setIsOpen(!isOpen)} className="rounded-xl shadow-md bg-white/80 backdrop-blur-md border-gray-100 h-12 w-12">
+              <Menu className="h-6 w-6 text-deep-navy" />
+           </Button>
+        </div>
+      )}
 
       {/* Backdrop */}
       <AnimatePresence>
@@ -84,20 +86,27 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 z-50 h-screen w-80 bg-white/80 backdrop-blur-2xl border-white/20 transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static lg:block shadow-3xl lg:shadow-none",
+          "fixed top-0 z-[100] h-screen w-80 bg-white/80 backdrop-blur-2xl border-white/20 transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static lg:block shadow-3xl lg:shadow-none",
           isRtl ? "right-0 border-l" : "left-0 border-r",
           isOpen ? "translate-x-0" : (isRtl ? "translate-x-full" : "-translate-x-full")
         )}
         dir={isRtl ? "rtl" : "ltr"}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative">
+          {/* Close button for mobile inside sidebar */}
+          <div className="lg:hidden absolute top-6 rtl:left-6 ltr:right-6 z-20">
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-xl bg-gray-50 border border-gray-100">
+               <X className="h-5 w-5" />
+            </Button>
+          </div>
+
           {/* Logo Section */}
           <div className="p-8 border-b border-gray-100/50 bg-white/40 sticky top-0 z-10 backdrop-blur-md">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-deep-navy rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-900/30">
                 <LayoutDashboard className="w-6 h-6 text-white" />
               </div>
-              <div>
+              <div className="pr-10 rtl:pr-0 rtl:pl-10 lg:pr-0 lg:pl-0">
                 <h1 className="text-xl font-black text-deep-navy leading-none">{t("adminPanel")}</h1>
                 <p className="text-[10px] text-primary font-black uppercase tracking-widest mt-1">Taj Al-Nozha</p>
               </div>

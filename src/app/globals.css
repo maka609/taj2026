@@ -142,3 +142,11 @@
     @apply transition-all duration-200 active:scale-95 hover:opacity-90;
   }
 }
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

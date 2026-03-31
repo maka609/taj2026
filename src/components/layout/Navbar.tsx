@@ -42,9 +42,9 @@ export default function Navbar() {
     >
       <nav
         className={cn(
-          "w-full h-full flex items-center justify-between px-4 sm:px-8 transition-all duration-500 border-b",
+          "w-full h-full flex items-center justify-between px-4 md:px-12 transition-all duration-500 border-b",
           isScrolled
-            ? "bg-white/70 backdrop-blur-md border-gray-100 shadow-sm"
+            ? "bg-white/90 backdrop-blur-md border-gray-100 shadow-sm"
             : "bg-transparent border-transparent"
         )}
       >
@@ -85,13 +85,15 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden w-12 h-12 flex items-center justify-center text-deep-navy active:scale-90 transition-transform relative z-[60]"
-          aria-label="Toggle Menu"
-        >
-          {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-        </button>
+        <div className="flex items-center gap-3 lg:hidden relative z-[60]">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-deep-navy active:scale-90 transition-all border border-gray-100"
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Drawer */}

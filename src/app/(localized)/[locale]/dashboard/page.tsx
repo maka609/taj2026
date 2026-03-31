@@ -55,25 +55,25 @@ export default function DashboardOverview() {
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
 
   return (
-    <div className="space-y-10 pb-12" dir={isRtl ? "rtl" : "ltr"}>
+    <div className="space-y-6 md:space-y-10 pb-12" dir={isRtl ? "rtl" : "ltr"}>
 
       {/* Top Section: Greeting & Timer */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 relative p-10 rounded-[3rem] bg-gradient-to-br from-deep-purple to-purple-800 text-white overflow-hidden shadow-2xl shadow-primary/20"
+            className="lg:col-span-2 relative p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-deep-purple to-purple-800 text-white overflow-hidden shadow-2xl shadow-primary/20"
         >
             <div className="absolute top-0 right-0 w-full h-full bg-[url('/pattern.png')] opacity-10" />
             <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                <div className="space-y-6">
+            <div className="relative z-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8">
+                <div className="space-y-6 w-full">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-widest">
                         {isRtl ? "نظام إدارة التعلم" : "Learning Management System"}
                     </div>
                     <div className="space-y-2">
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight flex items-center gap-4">
+                        <h1 className="text-3xl md:text-5xl font-black tracking-tight flex items-center gap-4">
                             {isRtl ? "صباح الخير، احمد" : "Good Morning, Ahmed"}
                             <span className="animate-bounce">👋</span>
                         </h1>
@@ -92,7 +92,7 @@ export default function DashboardOverview() {
                 </div>
 
                 {/* Study Timer Component */}
-                <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 border border-white/20 shadow-xl min-w-[240px] space-y-4">
+                <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 border border-white/20 shadow-xl w-full xl:min-w-[300px] space-y-4">
                     <div className="flex items-center justify-between gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                             <Clock className="w-5 h-5 text-white" />
@@ -124,7 +124,7 @@ export default function DashboardOverview() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="card-premium p-10 flex flex-col justify-between"
+            className="card-premium p-6 md:p-10 flex flex-col justify-between min-h-[300px]"
         >
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -157,7 +157,7 @@ export default function DashboardOverview() {
       </div>
 
       {/* Main Grid Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
 
         {/* Left/Main Column (Courses) */}
         <div className="lg:col-span-2 space-y-10">
@@ -173,14 +173,14 @@ export default function DashboardOverview() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {courses.map((course, i) => (
                     <motion.div
                         key={course.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * i }}
-                        className="card-premium p-8 flex flex-col items-center gap-6 group hover:border-primary/20"
+                        className="card-premium p-6 md:p-8 flex flex-col items-center gap-6 group hover:border-primary/20"
                     >
                         <div className="relative w-24 h-24">
                              <svg className="w-full h-full transform -rotate-90">
@@ -204,16 +204,16 @@ export default function DashboardOverview() {
 
             {/* Assignments & Quizzes Tabs Component */}
             <div className="card-premium overflow-hidden">
-                <div className="flex border-b border-gray-100 bg-gray-50/30">
-                    <button className="flex-1 py-6 px-10 text-sm font-black text-primary border-b-2 border-primary relative">
+                <div className="flex border-b border-gray-100 bg-gray-50/30 overflow-x-auto no-scrollbar">
+                    <button className="flex-1 py-6 px-6 md:px-10 text-sm font-black text-primary border-b-2 border-primary relative whitespace-nowrap">
                         {isRtl ? "الاختبارات" : "Quizzes"}
                     </button>
-                    <button className="flex-1 py-6 px-10 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors">
+                    <button className="flex-1 py-6 px-6 md:px-10 text-sm font-bold text-gray-400 hover:text-gray-900 transition-colors whitespace-nowrap">
                         {isRtl ? "تسليم الواجب" : "Assignment Submission"}
                     </button>
                 </div>
-                <div className="p-10 space-y-6">
-                    <div className="flex items-center gap-4 bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300">
+                <div className="p-6 md:p-10 space-y-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300">
                         <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-gray-100 group-hover:bg-primary group-hover:text-white transition-all">
                             <BookOpen className="w-6 h-6" />
                         </div>
