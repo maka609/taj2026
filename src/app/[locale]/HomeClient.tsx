@@ -271,7 +271,7 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
                       icon: Users
                     }
                 ].map((feat, i) => (
-                    <Card key={i} className="border-none shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[2.5rem] bg-white overflow-hidden group">
+                    <Card key={i} className="border-none shadow-sm hover:shadow-2xl transition-all duration-500 rounded-[2.5rem] bg-white/40 backdrop-blur-md border-white/20 overflow-hidden group">
                         <CardContent className="p-10 space-y-6">
                             <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
                                 <feat.icon className="w-6 h-6 text-primary group-hover:text-white transition-all" />
@@ -363,7 +363,7 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.slice(0, 3).map((item, i) => (
-                <Card key={item.id} className="border-none shadow-sm rounded-3xl bg-white p-8 relative overflow-hidden">
+                <Card key={item.id} className="border-none shadow-sm rounded-3xl bg-white/40 backdrop-blur-md border-white/20 p-8 relative overflow-hidden">
                   <Quote className="absolute -top-4 -right-4 w-24 h-24 text-primary/5 -rotate-12" />
                   <CardContent className="p-0 space-y-6 relative z-10">
                     <div className="flex gap-1">

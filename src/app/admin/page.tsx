@@ -83,7 +83,7 @@ export default function AdminDashboard() {
       >
         {stats.map((stat, index) => (
           <motion.div key={index} variants={item}>
-            <Card className="border-none shadow-sm bg-white hover:shadow-md transition-shadow duration-300">
+            <Card className="border-none shadow-sm bg-white/40 backdrop-blur-md border-white/20 hover:shadow-md transition-all duration-300">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`${stat.bgColor} p-3 rounded-2xl`}>
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Admissions */}
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm bg-white/40 backdrop-blur-md border-white/20 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between border-b border-gray-50 px-8 py-6">
             <CardTitle className="text-lg font-bold">آخر طلبات القبول 📝</CardTitle>
             <Link href="/admin/admissions">
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Latest News */}
-        <Card className="border-none shadow-sm bg-white overflow-hidden">
+        <Card className="border-none shadow-sm bg-white/40 backdrop-blur-md border-white/20 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between border-b border-gray-50 px-8 py-6">
             <CardTitle className="text-lg font-bold">أحدث الأخبار 📰</CardTitle>
             <Link href="/admin/news">
