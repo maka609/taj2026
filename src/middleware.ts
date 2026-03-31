@@ -11,7 +11,13 @@ const intlMiddleware = createIntlMiddleware({
 export default auth((req: NextRequest & { auth: any }) => {
   const isAuth = !!req.auth;
   const isAdminPage = req.nextUrl.pathname.startsWith('/admin');
+  const isApiRoute = req.nextUrl.pathname.startsWith('/api') && !req.nextUrl.pathname.startsWith('/api/auth');
   const isRootPage = req.nextUrl.pathname === '/';
+
+  // Protect Internal API Routes
+  if (isApiRoute && !isAuth) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   // Get locale from cookie
   const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
@@ -46,5 +52,5 @@ export default auth((req: NextRequest & { auth: any }) => {
 });
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 };
