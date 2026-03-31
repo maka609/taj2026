@@ -47,6 +47,17 @@ export async function updateFAQ(id: string, data: Partial<z.infer<typeof faqSche
   }
 }
 
+export async function updateFAQOrder(id: string, order: number) {
+    try {
+      await prisma.fAQ.update({ where: { id }, data: { order } })
+      revalidatePath('/admin/faq')
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating FAQ order:', error)
+      return { success: false, error: 'فشل في تحديث الترتيب' }
+    }
+}
+
 export async function deleteFAQ(id: string) {
   try {
     await prisma.fAQ.delete({ where: { id } })

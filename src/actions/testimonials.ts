@@ -26,17 +26,17 @@ export async function getTestimonials(filter?: 'all' | 'approved' | 'pending') {
   }
 }
 
-export async function approveTestimonial(id: string) {
+export async function updateTestimonialStatus(id: string, approved: boolean) {
   try {
     await prisma.testimonial.update({
       where: { id },
-      data: { approved: true }
+      data: { approved }
     })
     revalidatePath('/admin/testimonials')
     return { success: true }
   } catch (error) {
-    console.error('Error approving testimonial:', error)
-    return { success: false, error: 'فشل في الموافقة' }
+    console.error('Error updating testimonial status:', error)
+    return { success: false, error: 'فشل في تحديث الحالة' }
   }
 }
 

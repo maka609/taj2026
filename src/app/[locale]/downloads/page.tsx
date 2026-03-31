@@ -1,17 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import { Download, FileText, FileArchive, Search, LayoutGrid } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Download, FileText, FileArchive, Search, LayoutGrid, Sparkles, MessageCircle } from "lucide-react";
 import { getDocuments } from "@/actions/downloads";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { TableSkeleton } from "@/components/ui/skeletons";
 
 export default function DownloadsPage() {
   const t = useTranslations("Navigation");
-  const params = useParams();
-  const locale = params.locale as string;
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -25,107 +30,142 @@ export default function DownloadsPage() {
   const handleDownload = (file: any) => {
     if (file.fileUrl) {
       window.open(file.fileUrl, '_blank');
-    } else {
-      alert(`جاري تحميل: ${file.titleAr || file.title}\n\nملاحظة: لتفعيل التحميل الفعلي، يرجى:\n1. رفع الملفات على Supabase Storage\n2. ربط الملفات بقاعدة البيانات\n3. تحديث روابط الملفات`);
     }
   };
 
-  const handleContactClick = () => {
-    window.location.href = `/${locale}/contact`;
-  };
+  const filteredDocs = documents.filter(doc =>
+    (locale === "ar" ? doc.titleAr : doc.titleEn).toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-gray-50" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="pt-40 pb-24 px-6 min-h-screen bg-[#fcfcfd]" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div>
-            <div className="flex items-center gap-3 text-primary mb-4 font-bold tracking-wide">
-              <Download className="w-6 h-6 border-2 border-primary rounded-md p-0.5" />
-              <span>{locale === 'ar' ? 'مركز التحميلات والملفات' : 'Downloads Center'}</span>
-            </div>
-            <h1 className="text-5xl font-extrabold text-gray-900 mb-6">{t("downloads")}</h1>
-            <p className="text-xl text-gray-500 max-w-xl leading-relaxed">
-              {locale === 'ar' 
-                ? 'بإمكان أولياء الأمور والطلاب تحميل كافة الملفات، الجداول، والمستندات الهامة من هنا.'
-                : 'Parents and students can download all files, schedules, and important documents from here.'}
-            </p>
-          </div>
-          <div className="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-            <div className="relative group w-full lg:w-80">
-              <input 
-                type="text" 
-                placeholder={locale === 'ar' ? 'ابحث عن ملف...' : 'Search for a file...'}
-                className="w-full px-12 py-3 rounded-xl bg-gray-50 border border-transparent focus:bg-white focus:border-primary/20 outline-none transition-all text-sm"
-              />
-              <Search className={`absolute ${locale === 'ar' ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4`} />
-            </div>
-            <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all"><LayoutGrid className="w-5 h-5 text-gray-500" /></button>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {loading ? (
-            <div className="col-span-2 text-center py-12">
-              <p className="text-gray-500">جاري التحميل...</p>
-            </div>
-          ) : documents.length === 0 ? (
-            <div className="col-span-2 text-center py-12">
-              <p className="text-gray-500">لا توجد ملفات متاحة حالياً</p>
-            </div>
-          ) : (
-            documents.map((file) => (
-              <div key={file.id} className="group bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-gray-100 flex items-center justify-between hover:scale-[1.02] duration-300">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
-                    <FileText className="w-8 h-8" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-extrabold text-gray-900 truncate max-w-[300px] lg:max-w-[400px]">
-                      {locale === 'ar' ? file.titleAr : file.titleEn}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-gray-400">
-                      <span className="bg-gray-100 px-3 py-1 rounded-full">{file.category}</span>
-                      <span className="flex items-center gap-1">
-                        <FileArchive className="w-3 h-3" /> 
-                        {file.fileSize ? `${(file.fileSize / 1024 / 1024).toFixed(1)} MB` : 'N/A'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => handleDownload(file)}
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-primary/5 hover:bg-primary text-primary hover:text-white rounded-2xl transition-all shadow-sm group-hover:shadow-lg active:scale-90"
-                >
-                  <Download className="w-6 h-6" />
-                  <span className="text-[10px] font-bold">
-                    {locale === 'ar' ? 'تحميل الآن' : 'Download'}
-                  </span>
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="mt-20 p-12 bg-white rounded-[3rem] text-center shadow-xl border border-gray-100 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
-          <div className="relative z-10">
-            <h3 className="text-3xl font-extrabold text-gray-900 mb-6">
-              {locale === 'ar' ? 'هل تبحث عن ملف آخر؟' : 'Looking for another file?'}
-            </h3>
-            <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto font-sans leading-relaxed">
-              {locale === 'ar'
-                ? 'إذا كنت بحاجة إلى أي مستند أو جدول غير متوفر هنا، يرجى التواصل مع إدارة المدرسة مباشرة أو عبر صفحتنا على مواقع التواصل الاجتماعي.'
-                : 'If you need any document or schedule not available here, please contact the school administration directly or through our social media pages.'}
-            </p>
-            <button 
-              onClick={handleContactClick}
-              className="px-12 py-5 bg-primary text-white rounded-2xl font-bold text-xl hover:scale-105 transition-transform shadow-xl shadow-primary/20"
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-20 gap-10">
+          <div className="max-w-2xl space-y-6">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]"
             >
-              {locale === 'ar' ? 'تواصل مع الإدارة 📧' : 'Contact Administration 📧'}
-            </button>
+                <Sparkles className="w-3 h-3" /> {isRtl ? "مركز الموارد الرقمية" : "Digital Resource Center"}
+            </motion.div>
+            <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-5xl lg:text-7xl font-black text-deep-navy tracking-tight"
+            >
+                {t("downloads")}
+            </motion.h1>
+            <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-lg text-gray-500 font-medium leading-relaxed"
+            >
+                {locale === 'ar'
+                    ? 'بإمكان أولياء الأمور والطلاب الوصول لكافة الملفات التعليمية والجداول والمستندات الرسمية وتحميلها بسهولة.'
+                    : 'Parents and students can easily access and download all educational files, schedules, and official documents.'}
+            </motion.p>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative group w-full lg:w-96"
+          >
+            <Search className={cn("absolute top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 transition-colors group-focus-within:text-primary", isRtl ? "right-5" : "left-5")} />
+            <Input
+                type="text" 
+                placeholder={isRtl ? 'ابحث عن ملف...' : 'Search for a file...'}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={cn("h-16 rounded-2xl bg-white border-gray-100 focus:bg-white focus:border-primary shadow-xl shadow-gray-200/40 font-bold", isRtl ? "pr-14" : "pl-14")}
+            />
+          </motion.div>
         </div>
+
+        {loading ? (
+            <TableSkeleton />
+        ) : filteredDocs.length === 0 ? (
+            <div className="text-center py-32 space-y-6">
+                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto">
+                    <Download className="w-10 h-10 text-gray-300" />
+                </div>
+                <p className="text-gray-400 font-bold text-xl">{isRtl ? "لا توجد ملفات حالياً" : "No files available currently"}</p>
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <AnimatePresence mode="popLayout">
+                    {filteredDocs.map((file) => (
+                    <motion.div
+                        layout
+                        key={file.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                    >
+                        <Card className="border-none shadow-sm hover:shadow-2xl transition-all duration-700 rounded-[3rem] bg-white overflow-hidden group">
+                            <CardContent className="p-8 sm:p-10 flex items-center justify-between gap-6">
+                                <div className="flex items-center gap-6 min-w-0">
+                                    <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                                        <FileText className="w-8 h-8" />
+                                    </div>
+                                    <div className="space-y-2 min-w-0">
+                                        <h3 className="text-xl font-black text-deep-navy truncate group-hover:text-primary transition-colors">
+                                        {locale === 'ar' ? file.titleAr : file.titleEn}
+                                        </h3>
+                                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                            <span className="bg-gray-50 px-3 py-1 rounded-lg border border-gray-100">{file.category}</span>
+                                            <span className="flex items-center gap-1.5">
+                                                <FileArchive className="w-3.5 h-3.5 text-primary" />
+                                                {file.fileSize ? `${(file.fileSize / 1024 / 1024).toFixed(1)} MB` : 'N/A'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => handleDownload(file)}
+                                    size="icon"
+                                    className="h-16 w-16 bg-primary/5 hover:bg-primary text-primary hover:text-white rounded-[1.5rem] transition-all duration-500 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/20 shrink-0"
+                                >
+                                    <Download className="w-7 h-7" />
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
+        )}
+
+        {/* Support CTA */}
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-24 p-12 lg:p-20 bg-deep-navy rounded-[4rem] text-center text-white shadow-3xl relative overflow-hidden group"
+        >
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000" />
+          <div className="relative z-10 space-y-10">
+            <div className="space-y-4">
+                <h3 className="text-3xl lg:text-5xl font-black tracking-tight">{isRtl ? "هل تبحث عن ملف آخر؟" : "Looking for another file?"}</h3>
+                <p className="text-lg text-gray-400 font-medium max-w-2xl mx-auto">
+                    {isRtl ? "إذا كنت بحاجة إلى أي مستند أو جدول غير متوفر في المركز الرقمي، يرجى التواصل معنا." : "If you need any document or schedule not available in the digital center, please contact us."}
+                </p>
+            </div>
+            <Button
+                onClick={() => window.location.href = `/${locale}/contact`}
+                className="h-16 px-12 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 bg-primary"
+            >
+                {isRtl ? "تواصل مع الإدارة 📧" : "Contact Administration 📧"}
+            </Button>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
 }
+
+import { cn } from "@/lib/utils";

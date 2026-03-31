@@ -2,6 +2,17 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const newsSchema = z.object({
+  titleAr: z.string().min(5),
+  titleEn: z.string().min(5),
+  contentAr: z.string().min(10),
+  contentEn: z.string().min(10),
+  imageUrl: z.string().url().or(z.literal("")).optional().nullable(),
+});
+
+type NewsInput = z.infer<typeof newsSchema>;
 
 export async function getNews() {
   try {
@@ -27,9 +38,9 @@ export async function getNewsById(id: string) {
   }
 }
 
-export async function createNews(formData: any) {
+export async function createNews(formData: NewsInput) {
   try {
-    const { titleAr, titleEn, contentAr, contentEn, imageUrl } = formData;
+    const { titleAr, titleEn, contentAr, contentEn, imageUrl } = newsSchema.parse(formData);
     
     // Auto-generate a slug from English title or Date
     const baseSlug = titleEn.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -42,7 +53,7 @@ export async function createNews(formData: any) {
         titleEn,
         contentAr,
         contentEn,
-        imageUrl,
+        imageUrl: imageUrl || null,
         slug
       }
     });
@@ -58,7 +69,7 @@ export async function createNews(formData: any) {
   }
 }
 
-export async function updateNews(id: string, formData: any) {
+export async function updateNews(id: string, formData: Partial<NewsInput>) {
   try {
     const { titleAr, titleEn, contentAr, contentEn, imageUrl } = formData;
     
@@ -69,7 +80,7 @@ export async function updateNews(id: string, formData: any) {
         titleEn,
         contentAr,
         contentEn,
-        ...(imageUrl ? { imageUrl } : {})
+        ...(imageUrl !== undefined ? { imageUrl } : {})
       }
     });
 

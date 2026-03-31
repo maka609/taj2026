@@ -17,6 +17,24 @@
     "login": "Login",
     "logout": "Logout",
     "backToSite": "Back to site",
-    "adminPanel": "Admin Dashboard"
+    "adminPanel": "Admin Dashboard",
+    "email": "Email Address",
+    "password": "Password",
+    "submit": "Submit",
+    "backToHome": "Back to Home",
+    "loading": "Loading..."
+  },
+  "Login": {
+    "title": "Login",
+    "subtitle": "Welcome back to your educational portal",
+    "portalAccess": "Portal Access",
+    "secureEntry": "Secure & Encrypted Entry",
+    "secureDesc": "We use the latest encryption standards to protect your data.",
+    "modernUI": "Modern Easy Interface",
+    "modernDesc": "Design focused on accessibility and performance.",
+    "realtime": "Real-time Tracking",
+    "realtimeDesc": "Stay informed about everything related to the educational process.",
+    "cta": "Enter Platform",
+    "error": "Invalid email or password."
   }
 }

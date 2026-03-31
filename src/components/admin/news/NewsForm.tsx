@@ -1,31 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createNews, updateNews } from "@/actions/news";
-import { Loader2 } from "lucide-react";
+import { Loader2, Type, FileText, Image as ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
-// Input Validation Schema using Zod
+// News Schema
 const newsSchema = z.object({
   titleAr: z.string().min(5, { message: "العنوان العربي يجب أن يكون 5 أحرف على الأقل" }),
-  titleEn: z.string().min(5, { message: "العنوان الإنجليزي يجب أن يكون 5 أحرف على الأقل" }),
+  titleEn: z.string().min(5, { message: "English title must be at least 5 characters" }),
   contentAr: z.string().min(10, { message: "المحتوى العربي قصير جداً" }),
-  contentEn: z.string().min(10, { message: "المحتوى الإنجليزي قصير جداً" }),
+  contentEn: z.string().min(10, { message: "English content is too short" }),
   imageUrl: z.string().url({ message: "الرجاء إدخال رابط صورة صحيح" }).or(z.literal("")),
 });
 
 type NewsFormValues = z.infer<typeof newsSchema>;
 
+interface NewsItem {
+    id: string;
+    titleAr: string;
+    titleEn: string;
+    contentAr: string;
+    contentEn: string;
+    imageUrl?: string | null;
+}
+
 interface NewsFormProps {
-  initialData?: any;
+  initialData?: NewsItem | null;
   onSuccess: () => void;
 }
 
 export function NewsForm({ initialData, onSuccess }: NewsFormProps) {
-  const [errorMsg, setErrorMsg] = useState("");
-  
   const {
     register,
     handleSubmit,
@@ -42,9 +52,7 @@ export function NewsForm({ initialData, onSuccess }: NewsFormProps) {
   });
 
   const onSubmit: SubmitHandler<NewsFormValues> = async (data) => {
-    setErrorMsg("");
     let result;
-    
     if (initialData?.id) {
       result = await updateNews(initialData.id, data);
     } else {
@@ -52,92 +60,104 @@ export function NewsForm({ initialData, onSuccess }: NewsFormProps) {
     }
 
     if (result.success) {
+      toast.success(initialData ? "تم تحديث الخبر بنجاح" : "تمت إضافة الخبر بنجاح");
       onSuccess();
     } else {
-      setErrorMsg(result.error || "حدث خطأ غير متوقع");
+      toast.error(result.error || "حدث خطأ غير متوقع");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {errorMsg && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100">
-          {errorMsg}
-        </div>
-      )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 animate-in fade-in duration-500" dir="rtl">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Title Arabic */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700">العنوان (عربي)</label>
-          <input
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Arabic Title */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+            <Type className="w-4 h-4 text-primary" />
+            العنوان (عربي)
+          </label>
+          <Input
             {...register("titleAr")}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-bold text-lg"
             placeholder="أدخل عنوان الخبر بالعربية"
-            dir="rtl"
           />
-          {errors.titleAr && <p className="text-red-500 text-xs font-medium">{errors.titleAr.message}</p>}
+          {errors.titleAr && <p className="text-red-500 text-xs font-semibold">{errors.titleAr.message}</p>}
         </div>
 
-        {/* Title English */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700">العنوان (إنجليزي)</label>
-          <input
+        {/* English Title */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+            News Title (English)
+          </label>
+          <Input
             {...register("titleEn")}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-            placeholder="Enter news title in English"
             dir="ltr"
+            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans text-lg"
+            placeholder="Enter news title in English"
           />
-          {errors.titleEn && <p className="text-red-500 text-xs font-medium">{errors.titleEn.message}</p>}
+          {errors.titleEn && <p className="text-red-500 text-xs font-semibold">{errors.titleEn.message}</p>}
         </div>
-        
-        {/* Content Arabic */}
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-bold text-gray-700">المحتوى (عربي)</label>
+
+        {/* Arabic Content */}
+        <div className="space-y-3 md:col-span-2">
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+            <FileText className="w-4 h-4 text-primary" />
+            المحتوى بالتفصيل (عربي)
+          </label>
           <textarea
             {...register("contentAr")}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none"
-            placeholder="أدخل تفاصيل الخبر بالعربية..."
-            dir="rtl"
+            rows={5}
+            className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none resize-none font-medium leading-relaxed"
+            placeholder="اكتب محتوى الخبر هنا..."
           />
-          {errors.contentAr && <p className="text-red-500 text-xs font-medium">{errors.contentAr.message}</p>}
+          {errors.contentAr && <p className="text-red-500 text-xs font-semibold">{errors.contentAr.message}</p>}
         </div>
 
-        {/* Content English */}
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-bold text-gray-700">المحتوى (إنجليزي)</label>
+        {/* English Content */}
+        <div className="space-y-3 md:col-span-2">
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+            Full Content (English)
+          </label>
           <textarea
             {...register("contentEn")}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none resize-none"
-            placeholder="Enter news details in English..."
             dir="ltr"
+            rows={5}
+            className="w-full p-4 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none resize-none font-sans leading-relaxed"
+            placeholder="Write the news content in English here..."
           />
-          {errors.contentEn && <p className="text-red-500 text-xs font-medium">{errors.contentEn.message}</p>}
+          {errors.contentEn && <p className="text-red-500 text-xs font-semibold">{errors.contentEn.message}</p>}
         </div>
 
         {/* Image URL */}
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-bold text-gray-700">رابط صورة الغلاف (اختياري)</label>
-          <input
+        <div className="space-y-3 md:col-span-2">
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+            <ImageIcon className="w-4 h-4 text-primary" />
+            رابط صورة الخبر
+          </label>
+          <Input
             {...register("imageUrl")}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-            placeholder="https://example.com/image.jpg"
             dir="ltr"
+            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans"
+            placeholder="https://example.com/news-image.jpg"
           />
-          {errors.imageUrl && <p className="text-red-500 text-xs font-medium">{errors.imageUrl.message}</p>}
+          {errors.imageUrl && <p className="text-red-500 text-xs font-semibold">{errors.imageUrl.message}</p>}
         </div>
       </div>
 
-      <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
-        <button
+      <div className="pt-6 border-t border-gray-50 flex flex-col sm:flex-row justify-end gap-3">
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex items-center justify-center min-w-[140px]"
+          className="h-12 min-w-[160px] rounded-2xl font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : initialData ? "حفظ التعديلات" : "إضافة الخبر"}
-        </button>
+          {isSubmitting ? (
+            <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                جاري الحفظ...
+            </div>
+          ) : initialData ? "حفظ التعديلات" : "نشر الخبر"}
+        </Button>
       </div>
     </form>
   );
