@@ -92,6 +92,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --color-deep-navy: var(--deep-navy);
+  --font-cairo: var(--font-cairo);
 }
 
 @layer base {
