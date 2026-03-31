@@ -8,12 +8,14 @@ import { ApplicationStatus, Prisma } from '@prisma/client'
 const admissionSchema = z.object({
   studentNameAr: z.string().min(3, 'الاسم يجب أن يكون 3 أحرف على الأقل'),
   studentNameEn: z.string().min(3, 'Name must be at least 3 characters'),
-  gradeApplying: z.string().min(1, 'الرجاء اختيار الصف'),
-  dateOfBirth: z.string(),
+  gradeApplying: z.string().min(1, 'الرجاء اختيار الصف / Please select grade'),
+  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "تاريخ ميلاد غير صحيح / Invalid date of birth",
+  }),
   gender: z.enum(['ذكر', 'أنثى']),
-  parentEmail: z.string().email('بريد إلكتروني غير صحيح'),
-  parentPhone: z.string().min(10, 'رقم الهاتف غير صحيح'),
-  notes: z.string().optional(),
+  parentEmail: z.string().email('بريد إلكتروني غير صحيح / Invalid email'),
+  parentPhone: z.string().min(10, 'رقم الهاتف يجب أن يكون 10 أرقام على الأقل / Phone must be at least 10 digits'),
+  notes: z.string().optional().nullable(),
 })
 
 export async function getAdmissions(status?: string) {
