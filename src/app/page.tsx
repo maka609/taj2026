@@ -7,6 +7,10 @@ import { GraduationCap, Globe, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function LanguageGateway() {
+  const setLocale = (locale: string) => {
+    document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  };
+
   return (
     <div className="min-h-screen bg-[#0f172a] flex items-center justify-center relative overflow-hidden font-sans">
       {/* Dynamic Background */}
@@ -37,13 +41,18 @@ export default function LanguageGateway() {
             </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto"
+        >
             {/* Arabic Option */}
             <motion.div
                 whileHover={{ y: -10 }}
                 className="relative group"
             >
-                <Link href="/ar">
+                <Link href="/ar" onClick={() => setLocale('ar')}>
                     <div className="h-64 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] p-8 flex flex-col items-center justify-center gap-6 group-hover:bg-white group-hover:border-primary transition-all duration-500 shadow-2xl overflow-hidden">
                         <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all" />
                         <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
@@ -63,7 +72,7 @@ export default function LanguageGateway() {
                 whileHover={{ y: -10 }}
                 className="relative group"
             >
-                <Link href="/en">
+                <Link href="/en" onClick={() => setLocale('en')}>
                     <div className="h-64 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3rem] p-8 flex flex-col items-center justify-center gap-6 group-hover:bg-white group-hover:border-primary transition-all duration-500 shadow-2xl overflow-hidden">
                         <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all" />
                         <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
@@ -77,7 +86,7 @@ export default function LanguageGateway() {
                     </div>
                 </Link>
             </motion.div>
-        </div>
+        </motion.div>
 
         {/* Footer Info */}
         <motion.div

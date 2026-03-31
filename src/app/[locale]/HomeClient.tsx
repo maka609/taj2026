@@ -106,13 +106,13 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
 
             <div className="flex flex-wrap gap-4 pt-4">
                 <Link href={`/${locale}/admission`}>
-                    <Button className="group h-16 px-10 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95">
+                    <Button className="group h-16 px-10 rounded-2xl font-black text-lg shadow-2xl shadow-blue-500/20 hover:scale-105 transition-all active:scale-95">
                         {isRtl ? "سجل ابنك الآن" : "Enroll Now"}
                         <ArrowRight className={cn("w-5 h-5 ml-2 transition-transform group-hover:translate-x-1", isRtl && "rotate-180")} />
                     </Button>
                 </Link>
                 <Link href={`/${locale}/about`}>
-                    <Button variant="outline" className="h-16 px-10 rounded-2xl font-black text-lg border-gray-200 text-deep-navy hover:bg-gray-50 transition-all">
+                    <Button variant="outline" className="h-16 px-10 rounded-2xl font-black text-lg border-gray-200 text-deep-navy hover:bg-gray-50 transition-all shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95">
                         {isRtl ? "اكتشف مدرستنا" : "Discover Our School"}
                     </Button>
                 </Link>
@@ -159,8 +159,14 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
                           />
                         </motion.div>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                          <GraduationCap className="w-32 h-32 text-primary opacity-20" />
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50 relative">
+                          <Image
+                            src="/graduation-placeholder.png"
+                            alt="Graduation"
+                            fill
+                            className="object-contain p-12 opacity-20"
+                            priority
+                          />
                         </div>
                       )}
                     </AnimatePresence>
@@ -170,7 +176,7 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
                 <motion.div
                     animate={{ y: [0, -15, 0] }}
                     transition={{ repeat: Infinity, duration: 4 }}
-                    className="absolute -bottom-8 -left-8 bg-white p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-50 max-w-[200px] z-20"
+                    className="absolute -bottom-8 -left-8 bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/20 max-w-[200px] z-20"
                 >
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">

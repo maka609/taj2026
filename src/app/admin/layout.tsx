@@ -1,13 +1,18 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { ErrorBoundary } from "@/components/admin/ui/ErrorBoundary";
+import { cookies } from "next/headers";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "ar";
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
-    <div className="flex min-h-screen bg-[#fcfcfd] overflow-hidden selection:bg-primary/10 selection:text-primary" dir="rtl">
+    <div className="flex min-h-screen bg-[#fcfcfd] overflow-hidden selection:bg-primary/10 selection:text-primary" dir={dir}>
       {/* Sidebar - fixed on large screens */}
       <div className="hidden lg:block w-72 flex-shrink-0 border-l border-gray-100 bg-white shadow-xl shadow-gray-200/50">
         <AdminSidebar />

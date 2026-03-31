@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 const intlMiddleware = createIntlMiddleware({
   locales: ['ar', 'en'],
   defaultLocale: 'ar',
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export default auth((req: NextRequest & { auth: any }) => {
@@ -27,6 +27,14 @@ export default auth((req: NextRequest & { auth: any }) => {
   // السماح بالوصول للأدمن بدون تسجيل دخول مؤقتاً
   if (isAdminPage) {
     return;
+  }
+
+  // If at root and no locale cookie, let it through to the gateway
+  if (req.nextUrl.pathname === '/') {
+    const locale = req.cookies.get('NEXT_LOCALE')?.value;
+    if (!locale) {
+      return;
+    }
   }
 
   // next-intl logic
