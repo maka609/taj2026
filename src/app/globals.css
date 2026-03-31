@@ -123,8 +123,14 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-cairo;
+    @apply bg-background text-foreground font-cairo antialiased selection:bg-primary/10;
+    font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem); /* Fluid Body Font */
   }
+
+  h1 { @apply text-[clamp(2.5rem,2rem+4vw,6rem)] font-black leading-[1.1] tracking-tight; }
+  h2 { @apply text-[clamp(2rem,1.5rem+3vw,4.5rem)] font-black leading-tight tracking-tight; }
+  h3 { @apply text-[clamp(1.5rem,1.25rem+2vw,3.5rem)] font-black leading-snug; }
+  h4 { @apply text-[clamp(1.25rem,1.1rem+1vw,2.5rem)] font-black; }
 }
 
 @layer components {
