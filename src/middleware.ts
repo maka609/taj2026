@@ -10,9 +10,15 @@ const intlMiddleware = createIntlMiddleware({
 
 export default auth((req: NextRequest & { auth: any }) => {
   const isAuth = !!req.auth;
-  const isAdminPage = req.nextUrl.pathname.startsWith('/admin');
-  const isApiRoute = req.nextUrl.pathname.startsWith('/api') && !req.nextUrl.pathname.startsWith('/api/auth');
-  const isRootPage = req.nextUrl.pathname === '/';
+  const pathname = req.nextUrl.pathname;
+
+  // Detect if it's an admin page (handles both /admin and /[locale]/admin)
+  const isAdminPage = pathname.startsWith('/admin') ||
+                      pathname.startsWith('/ar/admin') ||
+                      pathname.startsWith('/en/admin');
+
+  const isApiRoute = pathname.startsWith('/api') && !pathname.startsWith('/api/auth');
+  const isRootPage = pathname === '/';
 
   // Protect Internal API Routes
   if (isApiRoute && !isAuth) {
@@ -28,7 +34,11 @@ export default auth((req: NextRequest & { auth: any }) => {
       const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
       return Response.redirect(new URL(`/${locale}/portal/login`, req.nextUrl));
     }
-    return;
+    // If it's the non-locale admin path, redirect to localized one
+    if (pathname === '/admin') {
+      const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
+      return Response.redirect(new URL(`/${locale}/admin`, req.nextUrl));
+    }
   }
 
   // Handle Root Page (Splash Screen)

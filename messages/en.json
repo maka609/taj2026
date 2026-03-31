@@ -36,5 +36,41 @@
     "realtimeDesc": "Stay informed about everything related to the educational process.",
     "cta": "Enter Platform",
     "error": "Invalid email or password."
+  },
+  "Admin": {
+    "title": "Command Center",
+    "subtitle": "Welcome to Taj Schools engine. Monitor performance and requests in real-time.",
+    "activeSystem": "System is active",
+    "newAdmissions": "New Admissions",
+    "settings": "Settings",
+    "totalAdmissions": "Total Admissions",
+    "newMessages": "New Messages",
+    "publishedNews": "Published News",
+    "careerRequests": "Career Requests",
+    "recentAdmissions": "Recent Admissions",
+    "viewAll": "View All",
+    "latestNews": "Latest News",
+    "manageNews": "Manage News",
+    "underReview": "Under Review",
+    "generalNews": "General News",
+    "visitSite": "Visit Site"
+  },
+  "AdminSidebar": {
+    "stats": "Statistics",
+    "admissions": "Admissions",
+    "messages": "Messages",
+    "news": "News",
+    "gallery": "Gallery",
+    "sliders": "Home Sliders",
+    "testimonials": "Testimonials",
+    "faq": "FAQ",
+    "staff": "Staff",
+    "calendar": "Calendar",
+    "downloads": "Downloads",
+    "backup": "Backup",
+    "security": "Security Logs",
+    "careers": "Careers",
+    "settings": "Settings",
+    "adminPanel": "Admin Panel"
   }
 }
