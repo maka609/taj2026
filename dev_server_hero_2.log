@@ -1,0 +1,17 @@
+
+> taj2026@0.1.0 dev
+> next dev --webpack -p 3003
+
+▲ Next.js 16.2.1 (webpack)
+- Local:         http://localhost:3003
+- Network:       http://192.168.0.2:3003
+✓ Ready in 1337ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3001
+- PID:          30922
+- Dir:          /app
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 30922 to stop it.
+[?25h

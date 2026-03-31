@@ -136,3 +136,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+@utility animate-pulse-gentle {
+  animation: pulse-gentle 3s ease-in-out infinite;
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+}
+
+@utility animate-bounce-slow {
+  animation: bounce-slow 4s ease-in-out infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@theme inline {
+  --color-gold: oklch(0.85 0.15 85);
+}
