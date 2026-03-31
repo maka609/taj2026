@@ -52,6 +52,25 @@ export default function AdmissionPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (currentStep < steps.length) {
+      // Basic client-side validation per step
+      if (currentStep === 1) {
+        if (!formData.studentNameAr || !formData.studentNameEn || !formData.dateOfBirth) {
+            toast.error(isRtl ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+            return;
+        }
+      }
+      if (currentStep === 2) {
+        if (!formData.parentName || !formData.nationalId || !formData.job) {
+            toast.error(isRtl ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+            return;
+        }
+      }
+      if (currentStep === 3) {
+        if (!formData.parentPhone || !formData.parentEmail || !formData.address) {
+            toast.error(isRtl ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+            return;
+        }
+      }
       nextStep();
     } else {
       setIsSubmitting(true);
@@ -212,7 +231,7 @@ export default function AdmissionPage() {
                       </div>
                       <div className="space-y-3">
                         <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "النوع" : "Gender"}</label>
-                        <select name="gender" value={formData.gender} onChange={handleChange} className="w-full h-14 px-6 rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none transition-all font-bold appearance-none">
+                        <select name="gender" value={formData.gender} onChange={handleChange} className="w-full h-14 px-6 rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none transition-all font-bold appearance-none" required>
                           <option value="ذكر">{isRtl ? "ذكر" : "Male"}</option>
                           <option value="أنثى">{isRtl ? "أنثى" : "Female"}</option>
                         </select>
@@ -231,16 +250,16 @@ export default function AdmissionPage() {
                   >
                     <div className="space-y-3">
                       <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "اسم ولي الأمر" : "Parent Name"}</label>
-                      <Input name="parentName" value={formData.parentName} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder="أحمد علي حسن" required />
+                      <Input name="parentName" value={formData.parentName} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder={isRtl ? "أحمد علي حسن" : "Ahmed Ali Hassan"} required />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "الرقم القومي" : "National ID"}</label>
-                        <Input name="nationalId" value={formData.nationalId} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder="29010101234567" required />
+                        <Input name="nationalId" value={formData.nationalId} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder="29010101234567" required minLength={14} maxLength={14} />
                       </div>
                       <div className="space-y-3">
                         <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "الوظيفة" : "Job"}</label>
-                        <Input name="job" value={formData.job} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder="مهندس، طبيب..." required />
+                        <Input name="job" value={formData.job} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder={isRtl ? "مهندس، طبيب..." : "Engineer, Doctor..."} required />
                       </div>
                     </div>
                   </motion.div>
