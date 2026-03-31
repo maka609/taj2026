@@ -51,6 +51,23 @@ const gatewayVariants: Variants = {
   },
 };
 
+import { Geist, Geist_Mono, Cairo } from "next/font/google";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const cairo = Cairo({
+  variable: "--font-cairo",
+  subsets: ["arabic", "latin"],
+});
+
 export default function LanguageGateway() {
   const router = useRouter();
   const [showSplash, setShowSplash] = useState(true);
@@ -90,7 +107,7 @@ export default function LanguageGateway() {
   };
 
   return (
-    <div className="min-h-screen bg-white bg-gradient-to-b from-white via-white to-blue-50/40 flex items-center justify-center relative overflow-hidden font-sans selection:bg-primary/10">
+    <div className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} min-h-screen bg-white bg-gradient-to-b from-white via-white to-blue-50/40 flex items-center justify-center relative overflow-hidden font-sans selection:bg-primary/10 w-full`}>
       {/* Dynamic Ambient Background */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div

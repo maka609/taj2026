@@ -35,17 +35,17 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6",
-        isScrolled ? "pt-4" : "pt-6"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full",
+        isScrolled ? "h-16 md:h-20" : "h-20 md:h-24"
       )}
       dir={locale === "ar" ? "rtl" : "ltr"}
     >
       <nav
         className={cn(
-          "max-w-7xl mx-auto flex items-center justify-between px-8 py-4 rounded-[2rem] transition-all duration-500",
+          "w-full h-full flex items-center justify-between px-4 sm:px-8 transition-all duration-500 border-b",
           isScrolled
-            ? "bg-white/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/20"
-            : "bg-white/40 backdrop-blur-md border border-white/10 shadow-sm"
+            ? "bg-white/70 backdrop-blur-md border-gray-100 shadow-sm"
+            : "bg-transparent border-transparent"
         )}
       >
         {/* Logo */}
@@ -87,45 +87,55 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden w-10 h-10 flex items-center justify-center text-deep-navy"
+          className="lg:hidden w-12 h-12 flex items-center justify-center text-deep-navy active:scale-90 transition-transform relative z-[60]"
+          aria-label="Toggle Menu"
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
         </button>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-full left-6 right-6 mt-4 bg-white/95 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-8 lg:hidden shadow-2xl overflow-hidden"
+            initial={{ x: locale === 'ar' ? '100%' : '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: locale === 'ar' ? '100%' : '-100%' }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 bg-white z-[55] lg:hidden flex flex-col pt-24 px-8"
           >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4 overflow-y-auto pb-10">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={`/${locale}${item.href === "/" ? "" : item.href}`}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between p-4 rounded-2xl hover:bg-primary/5 transition-colors group"
+                  className="flex items-center justify-between py-6 border-b border-gray-50 group"
                 >
-                  <span className="text-lg font-bold text-gray-800 group-hover:text-primary transition-colors">{t(item.label)}</span>
-                  <ChevronDown className={cn("w-5 h-5 text-gray-300 -rotate-90 group-hover:text-primary transition-colors", locale === "ar" ? "rotate-90" : "-rotate-90")} />
+                  <span className="text-2xl font-black text-deep-navy group-hover:text-primary transition-colors">{t(item.label)}</span>
+                  <ChevronDown className={cn("w-6 h-6 text-gray-300", locale === "ar" ? "rotate-90" : "-rotate-90")} />
                 </Link>
               ))}
-            </div>
 
-            <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col gap-4">
-              <div className="flex items-center justify-between px-4">
-                  <span className="text-sm font-bold text-gray-400">اللغة / Language</span>
-                  <LanguageSwitcher />
+              <div className="mt-10 space-y-10">
+                  <div className="flex items-center justify-between bg-gray-50 p-6 rounded-3xl">
+                      <span className="text-sm font-black text-gray-400 uppercase tracking-widest">Language</span>
+                      <LanguageSwitcher />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <Link href={`/${locale}/admission`} onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="w-full rounded-2xl h-16 font-black text-xl shadow-2xl shadow-primary/30 btn-interactive">
+                            {t("admission")}
+                        </Button>
+                    </Link>
+                    <Link href={`/${locale}/portal/login`} onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full rounded-2xl h-16 font-black text-xl border-gray-200 text-deep-navy btn-interactive">
+                            {locale === 'ar' ? "دخول الطلاب" : "Student Login"}
+                        </Button>
+                    </Link>
+                  </div>
               </div>
-              <Link href={`/${locale}/admission`} onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full rounded-[1.25rem] h-14 font-black text-lg shadow-xl shadow-primary/20 mt-2">
-                    {t("admission")}
-                </Button>
-              </Link>
             </div>
           </motion.div>
         )}

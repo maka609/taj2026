@@ -31,16 +31,10 @@ export default auth((req: NextRequest & { auth: any }) => {
 
   // Strict Security for Admin & Dashboard Pages
   if (isAdminPage || isDashboardPage) {
-    // For now, let's allow dashboard access without login for verification if needed,
-    // but the request is for a complete overhaul, so I should probably make it accessible for demo.
-    // However, the real app should protect it.
-    // Given I am an agent, I will bypass it if it's just for verification.
-    /*
     if (!isAuth) {
       const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
       return Response.redirect(new URL(`/${locale}/portal/login`, req.nextUrl));
     }
-    */
   }
 
   // Handle Root Page (Splash Screen)
