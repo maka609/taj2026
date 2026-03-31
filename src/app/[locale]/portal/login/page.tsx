@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
@@ -104,6 +105,9 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <h2 className="text-3xl font-black text-deep-navy">{t("title")}</h2>
                             <p className="text-gray-500 font-medium">{t("subtitle")}</p>
+                        </div>
+                        <div className="flex justify-center pt-2">
+                            <LanguageSwitcher />
                         </div>
                     </div>
 
