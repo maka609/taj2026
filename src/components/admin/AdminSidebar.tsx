@@ -77,28 +77,28 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 z-50 h-screen w-72 bg-white border-l border-gray-100 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:block shadow-2xl lg:shadow-none",
+          "fixed top-0 right-0 z-50 h-screen w-80 bg-white/80 backdrop-blur-2xl border-l border-white/20 transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static lg:block shadow-3xl lg:shadow-none",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         dir="rtl"
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="p-6 border-b border-gray-50 bg-white sticky top-0 z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-deep-navy rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20">
-                <LayoutDashboard className="w-5 h-5 text-white" />
+          <div className="p-8 border-b border-gray-100/50 bg-white/40 sticky top-0 z-10 backdrop-blur-md">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-deep-navy rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-900/30 group-hover:rotate-6 transition-transform">
+                <LayoutDashboard className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-deep-navy leading-tight">لوحة الإدارة</h1>
-                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Taj El-Nozha School</p>
+                <h1 className="text-xl font-black text-deep-navy leading-none">لوحة الإدارة</h1>
+                <p className="text-[10px] text-primary font-black uppercase tracking-widest mt-1">Taj Al-Nozha</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
-            <nav className="space-y-1">
+          <div className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
+            <nav className="space-y-2">
               {menuItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -107,18 +107,18 @@ export default function AdminSidebar() {
                     href={item.href}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                      "flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-300 group relative overflow-hidden",
                       isActive
-                        ? "bg-primary text-white shadow-md shadow-primary/20 font-semibold"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-primary"
+                        ? "bg-primary text-white shadow-xl shadow-primary/25 font-black scale-[1.02]"
+                        : "text-gray-500 hover:bg-primary/5 hover:text-primary"
                     )}
                   >
-                    <item.icon className={cn("w-5 h-5 transition-transform duration-200 group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-primary")} />
-                    <span className="text-sm">{item.title}</span>
+                    <item.icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive ? "text-white" : "text-gray-400 group-hover:text-primary")} />
+                    <span className="text-sm tracking-tight">{item.title}</span>
                     {isActive && (
                       <motion.div
                         layoutId="active-pill"
-                        className="absolute left-2 w-1.5 h-1.5 bg-white rounded-full"
+                        className="absolute left-3 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                       />
                     )}
                   </Link>

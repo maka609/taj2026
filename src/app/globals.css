@@ -93,6 +93,23 @@
   --radius-xl: calc(var(--radius) + 4px);
   --color-deep-navy: var(--deep-navy);
   --font-cairo: var(--font-cairo);
+
+  /* Glassmorphism Classes */
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(20px);
+}
+
+@utility glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+}
+
+@utility glass-dark {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @layer base {

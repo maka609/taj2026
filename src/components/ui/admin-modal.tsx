@@ -20,15 +20,14 @@ interface AdminModalProps {
 export function AdminModal({ isOpen, onClose, title, children, className }: AdminModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={cn("max-w-2xl rounded-3xl p-0 border-none shadow-2xl overflow-hidden", className)} dir="rtl">
+      <DialogContent className={cn("max-w-2xl rounded-[3rem] p-0 border border-white/20 bg-white/60 backdrop-blur-3xl shadow-3xl overflow-hidden", className)} dir="rtl">
         {/* Custom Header to match the Ultra-Modern design */}
-        <DialogHeader className="px-8 py-6 border-b border-gray-50 bg-white sticky top-0 z-10 flex flex-row items-center justify-between">
-          <DialogTitle className="text-xl font-bold text-gray-900 tracking-tight">{title}</DialogTitle>
-          {/* Close button is handled by DialogContent primitive but we can customize it via CSS or props if needed */}
+        <DialogHeader className="px-10 py-8 border-b border-white/20 bg-white/20 sticky top-0 z-10">
+          <DialogTitle className="text-2xl font-black text-deep-navy tracking-tight">{title}</DialogTitle>
         </DialogHeader>
 
         {/* Scrollable Body */}
-        <div className="p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
+        <div className="p-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
           {children}
         </div>
       </DialogContent>
