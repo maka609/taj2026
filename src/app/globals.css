@@ -91,7 +91,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-deep-navy: var(--deep-navy);
+  --color-deep-navy: oklch(0.2 0.05 260);
   --font-cairo: var(--font-cairo);
 
   /* Glassmorphism Classes */

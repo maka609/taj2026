@@ -14,6 +14,9 @@ export async function loginAction(formData: FormData) {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
+    // Basic Rate Limiting / Delay to mitigate brute-force
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     // Strict validation
     loginSchema.parse({ email, password });
 
