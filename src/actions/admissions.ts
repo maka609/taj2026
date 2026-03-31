@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { ApplicationStatus, Prisma } from '@prisma/client'
 
 const admissionSchema = z.object({
   studentNameAr: z.string().min(3, 'الاسم يجب أن يكون 3 أحرف على الأقل'),
@@ -17,7 +18,7 @@ const admissionSchema = z.object({
 
 export async function getAdmissions(status?: string) {
   try {
-    const where = status && status !== 'all' ? { status: status as any } : {}
+    const where: Prisma.AdmissionApplicationWhereInput = status && status !== 'all' ? { status: status as ApplicationStatus } : {}
     
     const admissions = await prisma.admissionApplication.findMany({
       where,
@@ -32,11 +33,11 @@ export async function getAdmissions(status?: string) {
   }
 }
 
-export async function updateAdmissionStatus(id: string, status: 'PENDING' | 'REVIEWING' | 'APPROVED' | 'REJECTED') {
+export async function updateAdmissionStatus(id: string, status: string) {
   try {
     await prisma.admissionApplication.update({
       where: { id },
-      data: { status }
+      data: { status: status as ApplicationStatus }
     })
     
     revalidatePath('/admin/admissions')
@@ -58,5 +59,34 @@ export async function deleteAdmission(id: string) {
   } catch (error) {
     console.error('Error deleting admission:', error)
     return { success: false, error: 'فشل في الحذف' }
+  }
+}
+
+export async function submitAdmission(data: z.infer<typeof admissionSchema>) {
+  try {
+    const validated = admissionSchema.parse(data);
+
+    const admission = await prisma.admissionApplication.create({
+      data: {
+        studentNameAr: validated.studentNameAr,
+        studentNameEn: validated.studentNameEn,
+        gradeApplying: validated.gradeApplying,
+        dateOfBirth: new Date(validated.dateOfBirth),
+        gender: validated.gender,
+        parentEmail: validated.parentEmail,
+        parentPhone: validated.parentPhone,
+        notes: validated.notes || "",
+        status: "PENDING"
+      }
+    });
+
+    revalidatePath('/admin/admissions');
+    return { success: true, data: admission };
+  } catch (error) {
+    console.error('Error submitting admission:', error);
+    if (error instanceof z.ZodError) {
+      return { success: false, error: "بيانات غير صالحة" };
+    }
+    return { success: false, error: 'فشل في إرسال الطلب' };
   }
 }

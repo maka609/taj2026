@@ -9,7 +9,7 @@ const documentSchema = z.object({
   titleEn: z.string().min(3),
   fileUrl: z.string().url(),
   category: z.string(),
-  fileSize: z.number().int().optional(),
+  fileSize: z.number().int().optional().nullable(),
 })
 
 export async function getDocuments() {
@@ -26,11 +26,8 @@ export async function getDocuments() {
 
 export async function createDocument(data: z.infer<typeof documentSchema>) {
   try {
-    console.log('Creating document with data:', data)
     const validated = documentSchema.parse(data)
-    console.log('Validated data:', validated)
     const document = await prisma.document.create({ data: validated })
-    console.log('Document created:', document)
     revalidatePath('/admin/downloads')
     return { success: true, data: document }
   } catch (error) {
@@ -38,6 +35,20 @@ export async function createDocument(data: z.infer<typeof documentSchema>) {
     return { success: false, error: 'فشل في الإضافة' }
   }
 }
+
+export async function updateDocument(id: string, data: Partial<z.infer<typeof documentSchema>>) {
+    try {
+      const document = await prisma.document.update({
+        where: { id },
+        data
+      })
+      revalidatePath('/admin/downloads')
+      return { success: true, data: document }
+    } catch (error) {
+      console.error('Error updating document:', error)
+      return { success: false, error: 'فشل في التحديث' }
+    }
+  }
 
 export async function deleteDocument(id: string) {
   try {
@@ -49,7 +60,7 @@ export async function deleteDocument(id: string) {
       const urlParts = document.fileUrl.split('/')
       const fileName = urlParts[urlParts.length - 1]
       
-      // حذف الملف من Supabase Storage
+      // حذف الصورة من Supabase Storage
       const { supabase } = await import('@/lib/supabase')
       const { error: storageError } = await supabase.storage
         .from('documents')

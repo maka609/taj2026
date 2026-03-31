@@ -1,131 +1,185 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTranslations } from "next-intl";
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, Sparkles, Loader2, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { sendMessage } from "@/actions/messages";
 
 export default function ContactPage() {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
+  const isRtl = locale === "ar";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const result = await sendMessage(formData);
+      if (result.success) {
+        setIsSuccess(true);
+        toast.success(isRtl ? "تم إرسال رسالتك بنجاح" : "Your message has been sent successfully");
+      } else {
+        toast.error(result.error || (isRtl ? "حدث خطأ" : "An error occurred"));
+      }
+    } catch (err) {
+      toast.error(isRtl ? "فشل الاتصال بالخادم" : "Server connection failed");
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 1500);
+    }
   };
 
   return (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-gray-50" dir="rtl">
+    <div className="pt-40 pb-24 px-6 min-h-screen bg-[#fcfcfd]" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-6">{t("contact")}</h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            يسعدنا تواصلكم معنا. فريقنا جاهز للرد على استفساراتكم ومساعدتكم في أي وقت.
-          </p>
+
+        {/* Header */}
+        <div className="text-center mb-24 space-y-6">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]"
+            >
+                <Sparkles className="w-3 h-3" /> {isRtl ? "متاحون لخدمتكم" : "Available to serve you"}
+            </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl lg:text-7xl font-black text-deep-navy tracking-tight"
+          >
+            {t("contact")}
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed"
+          >
+            {isRtl
+              ? "لديك سؤال أو استفسار؟ فريقنا الإداري والتربوي يسعده دائماً سماع صوتكم وتقديم المساعدة اللازمة."
+              : "Have a question or inquiry? Our administrative and educational team is always happy to hear from you and provide the necessary assistance."}
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Contact Information */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-6 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shrink-0">
-                <MapPin className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">موقعنا</h3>
-                <p className="text-gray-500 leading-relaxed text-sm">القاهرة، النزهة، شارع المدرسة، مبنى رقم 123</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-6 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
-                <Phone className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">اتصل بنا</h3>
-                <p className="text-gray-500 leading-relaxed text-sm" dir="ltr">+20 123 456 7890</p>
-                <p className="text-gray-500 leading-relaxed text-sm" dir="ltr">+20 098 765 4321</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-6 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center shrink-0">
-                <Mail className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">البريد الإلكتروني</h3>
-                <p className="text-gray-500 leading-relaxed text-sm">info@taj-nozha.com</p>
-                <p className="text-gray-500 leading-relaxed text-sm">admissions@taj-nozha.com</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex items-start gap-6 hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shrink-0">
-                <Clock className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">ساعات العمل</h3>
-                <p className="text-gray-500 leading-relaxed text-sm">الأحد - الخميس: 8 صباحاً - 3 مساءً</p>
-                <p className="text-gray-500 leading-relaxed text-sm">الجمعة - السبت: مغلق</p>
-              </div>
-            </div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, x: isRtl ? 30 : -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:col-span-1 space-y-6"
+          >
+            {[
+                { title: isRtl ? "موقعنا" : "Our Location", info: isRtl ? "القاهرة، النزهة الجديدة، شارع النصر" : "Cairo, New Nozha, El Nasr St", icon: MapPin, color: "text-blue-600", bg: "bg-blue-50" },
+                { title: isRtl ? "اتصل بنا" : "Call Us", info: "+20 123 456 7890", info2: "+20 098 765 4321", icon: Phone, color: "text-emerald-600", bg: "bg-emerald-50" },
+                { title: isRtl ? "البريد الإلكتروني" : "Email", info: "info@taj-nozha.com", info2: "admissions@taj-nozha.com", icon: Mail, color: "text-violet-600", bg: "bg-violet-50" },
+                { title: isRtl ? "ساعات العمل" : "Working Hours", info: isRtl ? "الأحد - الخميس: 8 صباحاً - 3 مساءً" : "Sun - Thu: 8 AM - 3 PM", info2: isRtl ? "الجمعة - السبت: مغلق" : "Fri - Sat: Closed", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" }
+            ].map((item, i) => (
+                <Card key={i} className="border-none shadow-sm bg-white hover:shadow-xl transition-all duration-500 rounded-[2.5rem] overflow-hidden group">
+                    <CardContent className="p-8 flex items-start gap-6 group-hover:translate-x-2 transition-transform duration-500">
+                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
+                            <item.icon className="w-7 h-7" />
+                        </div>
+                        <div className="space-y-1">
+                            <h3 className="text-lg font-black text-deep-navy">{item.title}</h3>
+                            <p className="text-gray-500 font-bold text-sm leading-relaxed">{item.info}</p>
+                            {item.info2 && <p className="text-gray-500 font-bold text-sm leading-relaxed">{item.info2}</p>}
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white p-10 rounded-3xl shadow-lg border border-gray-100 h-full">
-              {isSuccess ? (
-                <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-in fade-in zoom-in duration-500">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6">
-                    <CheckCircle2 className="w-12 h-12" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">تم الإرسال بنجاح!</h2>
-                  <p className="text-gray-600 mb-10 max-w-sm">شكراً لتواصلك معنا. سيقوم فريقنا بالرد عليك في أقرب وقت ممكن عبر بريدك الإلكتروني.</p>
-                  <button onClick={() => setIsSuccess(false)} className="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all">إرسال رسالة أخرى</button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-8">أرسل لنا استفسارك ✉️</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700">الاسم بالكامل</label>
-                      <input type="text" className="w-full px-5 py-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="أحمد محمد" required />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-gray-700">البريد الإلكتروني</label>
-                      <input type="email" className="w-full px-5 py-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="name@example.com" required />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">الموضوع</label>
-                    <input type="text" className="w-full px-5 py-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="استفسار عن القبول" required />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700">رسالتك</label>
-                    <textarea className="w-full px-5 py-4 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" rows={6} placeholder="اكتب رسالتك هنا بالتفصيل..." required></textarea>
-                  </div>
-                  <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-primary text-white rounded-2xl font-bold text-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-lg hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50">
-                    {isSubmitting ? <span className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Send className="w-5 h-5" /> إرسال الرسالة</>}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:col-span-2"
+          >
+            <Card className="border-none shadow-2xl shadow-gray-200/40 rounded-[3.5rem] bg-white overflow-hidden h-full">
+              <CardContent className="p-10 sm:p-16">
+                <AnimatePresence mode="wait">
+                    {isSuccess ? (
+                        <motion.div
+                            key="success"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="h-full flex flex-col items-center justify-center text-center py-12 space-y-10"
+                        >
+                            <div className="w-24 h-24 bg-emerald-50 text-emerald-600 rounded-[2.5rem] flex items-center justify-center shadow-inner">
+                                <CheckCircle2 className="w-12 h-12" />
+                            </div>
+                            <div className="space-y-4">
+                                <h2 className="text-4xl font-black text-deep-navy">{isRtl ? "شكراً لتواصلك!" : "Thanks for reaching out!"}</h2>
+                                <p className="text-gray-500 font-medium text-lg max-w-sm">
+                                    {isRtl ? "لقد تم استلام رسالتك بنجاح. سيقوم فريقنا بالرد عليك في أقرب وقت ممكن." : "Your message has been received successfully. Our team will respond as soon as possible."}
+                                </p>
+                            </div>
+                            <Button onClick={() => setIsSuccess(false)} className="h-14 px-10 rounded-2xl font-black">
+                                {isRtl ? "إرسال رسالة أخرى" : "Send another message"}
+                            </Button>
+                        </motion.div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-10">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
+                                    <MessageSquare className="w-3 h-3" /> {isRtl ? "راسلنا الآن" : "Message us now"}
+                                </div>
+                                <h2 className="text-4xl font-black text-deep-navy">{isRtl ? "كيف يمكننا مساعدتك؟" : "How can we help you?"}</h2>
+                            </div>
 
-        {/* Map Placeholder */}
-        <div className="mt-20 h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-gray-200 relative">
-          <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-400 text-xl font-bold">
-            <div className="text-center">
-              <MapPin className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              خريطة موقع المدرسة
-            </div>
-          </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "الاسم بالكامل" : "Full Name"}</label>
+                                    <Input name="name" value={formData.name} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder={isRtl ? "أدخل اسمك الكريم" : "Enter your full name"} required />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "البريد الإلكتروني" : "Email Address"}</label>
+                                    <Input name="email" value={formData.email} onChange={handleChange} dir="ltr" type="email" className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-sans font-bold px-6 focus:bg-white transition-all" placeholder="name@example.com" required />
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "الموضوع" : "Subject"}</label>
+                                <Input name="subject" value={formData.subject} onChange={handleChange} className="h-14 rounded-2xl bg-gray-50/50 border-gray-100 font-bold px-6 focus:bg-white transition-all" placeholder={isRtl ? "عن ماذا تود الاستفسار؟" : "What is your inquiry about?"} required />
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-deep-navy uppercase tracking-wider">{isRtl ? "رسالتك" : "Your Message"}</label>
+                                <textarea name="message" value={formData.message} onChange={handleChange} className="w-full p-6 rounded-[2rem] border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium resize-none" rows={6} placeholder={isRtl ? "اكتب استفسارك هنا بالتفصيل..." : "Write your inquiry here in detail..."} required />
+                            </div>
+
+                            <Button type="submit" disabled={isSubmitting} className="w-full h-16 rounded-[1.5rem] font-black text-xl shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all">
+                                {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (
+                                    <>
+                                        <span>{isRtl ? "إرسال الرسالة" : "Send Message"}</span>
+                                        <Send className={cn("w-5 h-5 ml-3", isRtl && "rotate-180")} />
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

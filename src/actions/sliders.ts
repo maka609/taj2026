@@ -7,9 +7,9 @@ import { z } from 'zod'
 // Schema للتحقق من البيانات
 const sliderSchema = z.object({
   imageUrl: z.string().url(),
-  titleAr: z.string().optional(),
-  titleEn: z.string().optional(),
-  link: z.string().url().optional(),
+  titleAr: z.string().optional().nullable(),
+  titleEn: z.string().optional().nullable(),
+  link: z.string().url().optional().nullable(),
   order: z.number().int().default(0),
   active: z.boolean().default(true),
 })
@@ -33,7 +33,7 @@ export async function createSlider(data: z.infer<typeof sliderSchema>) {
     const validated = sliderSchema.parse(data)
     
     const slider = await prisma.slider.create({
-      data: validated
+      data: validated as any
     })
     
     revalidatePath('/admin/sliders')
@@ -51,7 +51,7 @@ export async function updateSlider(id: string, data: Partial<z.infer<typeof slid
   try {
     const slider = await prisma.slider.update({
       where: { id },
-      data
+      data: data as any
     })
     
     revalidatePath('/admin/sliders')
@@ -81,45 +81,20 @@ export async function deleteSlider(id: string) {
   }
 }
 
-// تغيير ترتيب السلايدر
-export async function reorderSlider(id: string, direction: 'up' | 'down') {
-  try {
-    const slider = await prisma.slider.findUnique({ where: { id } })
-    if (!slider) return { success: false, error: 'السلايدر غير موجود' }
-    
-    const newOrder = direction === 'up' ? slider.order - 1 : slider.order + 1
-    
-    await prisma.slider.update({
-      where: { id },
-      data: { order: newOrder }
-    })
-    
-    revalidatePath('/admin/sliders')
-    
-    return { success: true }
-  } catch (error) {
-    console.error('Error reordering slider:', error)
-    return { success: false, error: 'فشل في تغيير الترتيب' }
-  }
-}
+// تحديث حالة السلايدر
+export async function updateSliderStatus(id: string, active: boolean) {
+    try {
+      await prisma.slider.update({
+        where: { id },
+        data: { active }
+      })
 
-// تفعيل/إلغاء تفعيل السلايدر
-export async function toggleSliderActive(id: string) {
-  try {
-    const slider = await prisma.slider.findUnique({ where: { id } })
-    if (!slider) return { success: false, error: 'السلايدر غير موجود' }
-    
-    await prisma.slider.update({
-      where: { id },
-      data: { active: !slider.active }
-    })
-    
-    revalidatePath('/admin/sliders')
-    revalidatePath('/')
-    
-    return { success: true }
-  } catch (error) {
-    console.error('Error toggling slider:', error)
-    return { success: false, error: 'فشل في تغيير الحالة' }
-  }
+      revalidatePath('/admin/sliders')
+      revalidatePath('/')
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating slider status:', error)
+      return { success: false, error: 'فشل في تحديث الحالة' }
+    }
 }

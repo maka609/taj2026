@@ -1,4 +1,5 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { ErrorBoundary } from "@/components/admin/ui/ErrorBoundary";
 
 export default function AdminLayout({
   children,
@@ -6,20 +7,22 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden" dir="rtl">
+    <div className="flex min-h-screen bg-[#fcfcfd] overflow-hidden selection:bg-primary/10 selection:text-primary" dir="rtl">
       {/* Sidebar - fixed on large screens */}
-      <div className="hidden lg:block w-80 flex-shrink-0">
+      <div className="hidden lg:block w-72 flex-shrink-0 border-l border-gray-100 bg-white shadow-xl shadow-gray-200/50">
         <AdminSidebar />
       </div>
       
-      {/* Sidebar for mobile is handled inside the component with absolute positioning */}
+      {/* Sidebar for mobile is handled inside the component with fixed positioning */}
       <div className="block lg:hidden">
         <AdminSidebar />
       </div>
 
-      <main className="flex-1 h-full overflow-y-auto p-6 lg:p-10">
-        <div className="max-w-7xl mx-auto">
-          {children}
+      <main className="flex-1 h-screen overflow-y-auto px-6 py-8 lg:px-12 lg:py-10">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </div>
       </main>
     </div>

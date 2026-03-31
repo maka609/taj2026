@@ -1,18 +1,17 @@
 import React from "react";
 import { getAdmissions } from "@/actions/admissions";
-import AdmissionsClient from "@/components/admin/admissions/AdmissionsClient";
+import AdmissionsDashboard from "@/components/admin/admissions/AdmissionsDashboard";
+
+export const metadata = {
+  title: "إدارة طلبات القبول | Taj El-Nozha Admin",
+};
 
 export default async function AdmissionsPage() {
   const { data: admissions } = await getAdmissions();
 
   return (
-    <div dir="rtl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">طلبات القبول 📝</h1>
-        <p className="text-gray-500 mt-2">إدارة ومراجعة طلبات القبول للطلاب الجدد</p>
-      </div>
-
-      <AdmissionsClient initialData={admissions || []} />
+    <div className="w-full">
+      <AdmissionsDashboard initialData={admissions || []} />
     </div>
   );
 }

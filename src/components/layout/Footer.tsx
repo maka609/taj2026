@@ -4,91 +4,96 @@ import React from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { GraduationCap, Mail, Phone, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Footer() {
   const t = useTranslations("Navigation");
-  const common = useTranslations("Common");
   const locale = useLocale();
 
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-20 pb-10" dir={locale === "ar" ? "rtl" : "ltr"}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-          {/* Brand and Info */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg">
-                <GraduationCap className="w-6 h-6" />
+    <footer className="bg-[#0f172a] text-gray-400 pt-32 pb-12 overflow-hidden relative" dir={locale === "ar" ? "rtl" : "ltr"}>
+      {/* Decorative Circles */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+
+          {/* Brand Column */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/20">
+                <GraduationCap className="w-7 h-7" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white uppercase">
-                TAJ <span className="text-primary">SCHOOLS</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-black tracking-tight text-white leading-none">TAJ SCHOOLS</span>
+                <span className="text-[10px] font-bold text-primary tracking-widest uppercase mt-1">Language Institution</span>
+              </div>
             </div>
-            <p className="text-sm leading-relaxed text-gray-400">
-              مدارس تاج النزهة اللغوية - التميز في التعليم وبناء الشخصية. نسعى دائماً لتقديم أفضل تجربة تعليمية لأبنائنا في بيئة آمنة ومتطورة.
+            <p className="text-sm leading-relaxed font-medium">
+              نلتزم في مدارس تاج النزهة بتقديم تعليم عالمي المستوى يمزج بين الأصالة والابتكار، لنبني أجيالاً قادرة على قيادة المستقبل.
             </p>
-            <div className="flex items-center gap-4">
-              <Link href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-primary transition-colors text-white text-xs">FB</Link>
-              <Link href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-primary transition-colors text-white text-xs">IG</Link>
-              <Link href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-primary transition-colors text-white text-xs">YT</Link>
-              <Link href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-primary transition-colors text-white text-xs">X</Link>
-            </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-6">
-            <h3 className="text-white font-bold text-lg">روابط سريعة</h3>
+          {/* Navigation Links */}
+          <div className="space-y-8">
+            <h3 className="text-white font-black text-sm uppercase tracking-widest border-r-4 border-primary pr-4">خريطة الموقع</h3>
             <nav className="flex flex-col gap-4">
-              <Link href="/about" className="text-sm hover:text-primary transition-colors">{t("about")}</Link>
-              <Link href="/news" className="text-sm hover:text-primary transition-colors">{t("news")}</Link>
-              <Link href="/staff" className="text-sm hover:text-primary transition-colors">{t("staff")}</Link>
-              <Link href="/careers" className="text-sm hover:text-primary transition-colors">{t("careers")}</Link>
-              <Link href="/faq" className="text-sm hover:text-primary transition-colors">{t("faq")}</Link>
+              {["about", "news", "staff", "careers", "faq"].map((link) => (
+                  <Link key={link} href={`/${locale}/${link}`} className="text-sm font-bold hover:text-white transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary group-hover:scale-150 transition-all duration-300" />
+                    {t(link)}
+                  </Link>
+              ))}
             </nav>
           </div>
 
-          {/* Important Resources */}
-          <div className="space-y-6">
-            <h3 className="text-white font-bold text-lg">مصادر هامة</h3>
+          {/* Quick Access */}
+          <div className="space-y-8">
+            <h3 className="text-white font-black text-sm uppercase tracking-widest border-r-4 border-primary pr-4">روابط سريعة</h3>
             <nav className="flex flex-col gap-4">
-              <Link href="/admission" className="text-sm hover:text-primary transition-colors">{t("admission")}</Link>
-              <Link href="/calendar" className="text-sm hover:text-primary transition-colors">{t("calendar")}</Link>
-              <Link href="/downloads" className="text-sm hover:text-primary transition-colors">{t("downloads")}</Link>
-              <Link href="/portal" className="text-sm hover:text-primary transition-colors text-primary font-bold">{t("portal")}</Link>
+              {["admission", "calendar", "downloads", "portal"].map((link) => (
+                  <Link key={link} href={`/${locale}/${link}`} className="text-sm font-bold hover:text-white transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400/20 group-hover:bg-blue-400 group-hover:scale-150 transition-all duration-300" />
+                    {t(link)}
+                  </Link>
+              ))}
             </nav>
           </div>
 
           {/* Contact Details */}
-          <div className="space-y-6">
-            <h3 className="text-white font-bold text-lg">تواصل معنا</h3>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0 mt-1" />
-                <span className="text-sm text-gray-400 leading-relaxed">القاهرة، النزهة، شارع المدرسة، مبنى رقم 123</span>
+          <div className="space-y-8">
+            <h3 className="text-white font-black text-sm uppercase tracking-widest border-r-4 border-primary pr-4">اتصل بنا</h3>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                <MapPin className="w-5 h-5 text-primary shrink-0" />
+                <span className="text-xs font-bold leading-relaxed text-gray-300">القاهرة، النزهة الجديدة، شارع النصر، مبنى المدرسة</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4 px-4">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-sm text-gray-400" dir="ltr">+20 123 456 7890</span>
+                <span className="text-sm font-bold font-sans text-gray-300" dir="ltr">+20 123 456 7890</span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4 px-4">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-sm text-gray-400">info@taj-nozha.com</span>
+                <span className="text-sm font-bold text-gray-300">info@taj-nozha.com</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom copyright */}
-        <div className="pt-10 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} مدارس تاج النزهة اللغوية. جميع الحقوق محفوظة.
+        {/* Footer Bottom */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+            &copy; {new Date().getFullYear()} TAJ SCHOOLS. ALL RIGHTS RESERVED.
           </p>
-          <div className="flex items-center gap-6">
-            <Link href="#" className="text-xs text-gray-500 hover:text-white transition-colors">سياسة الخصوصية</Link>
-            <Link href="#" className="text-xs text-gray-500 hover:text-white transition-colors">اتفاقية الاستخدام</Link>
+          <div className="flex items-center gap-8">
+            <Link href="#" className="text-[10px] font-black uppercase tracking-tighter hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="#" className="text-[10px] font-black uppercase tracking-tighter hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
     </footer>
   );
 }
+
+import { cn } from "@/lib/utils";

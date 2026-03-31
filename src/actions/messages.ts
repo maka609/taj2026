@@ -47,3 +47,23 @@ export async function deleteMessage(id: string) {
     return { success: false, error: 'فشل في الحذف' }
   }
 }
+
+export async function sendMessage(data: { name: string, email: string, subject: string, message: string }) {
+  try {
+    const newMessage = await prisma.message.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        subject: data.subject,
+        message: data.message,
+        phone: "",
+      }
+    });
+
+    revalidatePath('/admin/messages');
+    return { success: true, data: newMessage };
+  } catch (error) {
+    console.error('Error sending message:', error);
+    return { success: false, error: 'فشل في إرسال الرسالة' };
+  }
+}
