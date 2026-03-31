@@ -2,11 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import { 
-  Users, 
-  Newspaper, 
-  MessageSquare, 
-  Briefcase, 
+import {
+  Users,
+  Newspaper,
+  MessageSquare,
+  Briefcase,
   FileCheck,
   TrendingUp,
   ArrowRight

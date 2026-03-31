@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { GraduationCap, Globe, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // --- Framer Motion Variants ---
 
-const containerVariants = {
+const containerVariants: Variants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
@@ -23,7 +23,7 @@ const containerVariants = {
   },
 };
 
-const logoVariants = {
+const logoVariants: Variants = {
   initial: { opacity: 0, scale: 0.5 },
   animate: {
     opacity: 1,
@@ -32,7 +32,7 @@ const logoVariants = {
   },
 };
 
-const nameVariants = {
+const nameVariants: Variants = {
   initial: { opacity: 0, y: 30 },
   animate: {
     opacity: 1,
@@ -41,7 +41,7 @@ const nameVariants = {
   },
 };
 
-const gatewayVariants = {
+const gatewayVariants: Variants = {
   initial: { opacity: 0, y: 20, scale: 0.98 },
   animate: {
     opacity: 1,
