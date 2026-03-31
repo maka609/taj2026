@@ -5,31 +5,39 @@ import { NextRequest } from 'next/server';
 const intlMiddleware = createIntlMiddleware({
   locales: ['ar', 'en'],
   defaultLocale: 'ar',
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export default auth((req: NextRequest & { auth: any }) => {
   const isAuth = !!req.auth;
-  const isAuthPage = req.nextUrl.pathname.includes('/login') || req.nextUrl.pathname.includes('/register');
   const isAdminPage = req.nextUrl.pathname.startsWith('/admin');
-  const isPortalPage = req.nextUrl.pathname.includes('/portal');
+  const isRootPage = req.nextUrl.pathname === '/';
 
-  // NextAuth logic - تعطيل الحماية مؤقتاً للأدمن
-  // TODO: تفعيل الحماية بعد إنشاء مستخدم admin
-  /*
-  if (isAdminPage || isPortalPage) {
-    if (!isAuth && !isAuthPage) {
-      return Response.redirect(new URL('/ar/portal/login', req.nextUrl));
-    }
-  }
-  */
+  // Get locale from cookie
+  const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
 
-  // السماح بالوصول للأدمن بدون تسجيل دخول مؤقتاً
+  // Bypass for Admin if logged in or allow temporarily
   if (isAdminPage) {
     return;
   }
 
-  // next-intl logic
+  // Handle Root Page (Splash Screen)
+  if (isRootPage) {
+    // If admin is logged in, send to admin dashboard
+    if (isAuth && req.auth.role === 'ADMIN') {
+        return Response.redirect(new URL('/admin', req.nextUrl));
+    }
+
+    // If locale is already chosen, redirect to that locale
+    if (localeCookie && ['ar', 'en'].includes(localeCookie)) {
+        return Response.redirect(new URL(`/${localeCookie}`, req.nextUrl));
+    }
+
+    // Otherwise, let them see the splash screen (root page.tsx)
+    return;
+  }
+
+  // next-intl logic for other pages
   return intlMiddleware(req);
 });
 
