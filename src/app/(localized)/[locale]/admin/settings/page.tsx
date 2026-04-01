@@ -1,26 +1,19 @@
-import { getGlobalSettings, getSMTPConfig } from "@/actions/settings";
 import { getSettings } from "@/actions/settings-engine";
 import SettingsForm from "@/components/admin/settings/SettingsForm";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
-  title: "إعدادات المنصة | Taj Schools Admin",
+  title: "إعدادات المنصة المتكاملة | Taj Schools Admin",
 };
 
 export default async function AdminSettingsPage() {
-  const [globalRes, smtpRes, settings] = await Promise.all([
-    getGlobalSettings(),
-    getSMTPConfig(),
-    getSettings()
-  ]);
+  const settings = await getSettings();
 
   return (
     <div className="w-full">
       <Suspense fallback={<SettingsSkeleton />}>
         <SettingsForm
-            globalSettings={globalRes.data}
-            smtpConfig={smtpRes.data}
             settings={settings}
         />
       </Suspense>

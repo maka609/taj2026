@@ -19,6 +19,7 @@ export default async function LocaleLayout({
 
   const settings = await getSettings();
   const optimizedLogo = getOptimizedImage(settings?.general?.logoUrl, { width: 200, height: 200 });
+  const optimizedFavicon = getOptimizedImage(settings?.general?.faviconUrl, { width: 32, height: 32 });
 
   // JSON-LD for Schema.org SEO
   const jsonLd = settings?.seo?.schema || {
@@ -53,6 +54,9 @@ export default async function LocaleLayout({
       />
       {settings?.general?.gpcEnabled && (
         <meta name="GPC" content="true" />
+      )}
+      {settings?.general?.faviconUrl && (
+        <link rel="icon" href={optimizedFavicon} />
       )}
       <NextIntlClientProvider messages={messages}>
         <Navbar />

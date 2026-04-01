@@ -13,6 +13,7 @@ export const SiteSettingsSchema = z.object({
   academic: z.object({
     registrationStatus: z.enum(["open", "closed", "coming_soon"]).default("open"),
     currentSemester: z.string().optional(),
+    academicYear: z.string().optional(),
   }),
   social: z.object({
     facebook: z.string().url().or(z.literal("")).optional().nullable(),
@@ -23,6 +24,7 @@ export const SiteSettingsSchema = z.object({
   seo: z.object({
     organizationName: z.string().optional(),
     description: z.string().optional(),
+    keywords: z.string().optional(),
     schema: z.any().optional(),
   }),
   contact: z.object({
@@ -30,7 +32,22 @@ export const SiteSettingsSchema = z.object({
     phone: z.string().optional().nullable(),
     addressAr: z.string().optional().nullable(),
     addressEn: z.string().optional().nullable(),
+    whatsapp: z.string().optional().nullable(),
   }),
+  smtp: z.object({
+    host: z.string().min(1, "المضيف مطلوب"),
+    port: z.number().int().positive(),
+    user: z.string().optional().nullable(),
+    pass: z.string().optional().nullable(),
+    fromEmail: z.string().email("بريد المرسل غير صحيح"),
+    fromName: z.string().min(1, "اسم المرسل مطلوب"),
+    encryption: z.enum(["SSL", "TLS", "None"]).default("TLS"),
+  }),
+  security: z.object({
+    maintenanceMode: z.boolean().default(false),
+    allowRegistrations: z.boolean().default(true),
+    sessionTimeout: z.number().int().default(30),
+  })
 });
 
 export type SiteSettings = z.infer<typeof SiteSettingsSchema>;

@@ -3,11 +3,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateGlobalSettings, updateSMTPConfig } from "@/actions/settings";
 import { updateSettingAction } from "@/actions/settings-engine";
 import { getOptimizedImage } from "@/lib/utils";
 import { SiteSettingsSchema, type SiteSettings } from "@/lib/settings-schema";
-import { GlobalSettingsSchema, SMTPConfigSchema } from "@/lib/schemas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,84 +17,64 @@ import {
   Loader2, Save, Globe, Mail, Layout, Palette,
   Phone, MapPin, GraduationCap, ShieldCheck, Search
 } from "lucide-react";
-import { z } from "zod";
 
 interface SettingsFormProps {
-  globalSettings: any;
-  smtpConfig: any;
-  settings: SiteSettings | null;
+  settings: SiteSettings;
 }
 
-export default function SettingsForm({ globalSettings, smtpConfig, settings }: SettingsFormProps) {
+export default function SettingsForm({ settings }: SettingsFormProps) {
 
-  // New Settings Engine Forms
+  // Section Forms
   const generalForm = useForm<SiteSettings['general']>({
     resolver: zodResolver(SiteSettingsSchema.shape.general),
-    defaultValues: settings?.general || {
-      siteNameAr: "مدارس تاج النزهة",
-      siteNameEn: "Taj Schools",
-      primaryColor: "#7c3aed",
-      secondaryColor: "#ea580c",
-      gpcEnabled: true,
-    }
+    defaultValues: settings.general
   });
 
   const academicForm = useForm<SiteSettings['academic']>({
     resolver: zodResolver(SiteSettingsSchema.shape.academic),
-    defaultValues: settings?.academic || {
-      registrationStatus: "open",
-    }
-  });
-
-  const seoForm = useForm<SiteSettings['seo']>({
-    resolver: zodResolver(SiteSettingsSchema.shape.seo),
-    defaultValues: settings?.seo || {}
+    defaultValues: settings.academic
   });
 
   const contactForm = useForm<SiteSettings['contact']>({
     resolver: zodResolver(SiteSettingsSchema.shape.contact),
-    defaultValues: settings?.contact || {
-      email: "info@taj-schools.com",
-    }
+    defaultValues: settings.contact
   });
 
   const socialForm = useForm<SiteSettings['social']>({
-      resolver: zodResolver(SiteSettingsSchema.shape.social),
-      defaultValues: settings?.social || {}
+    resolver: zodResolver(SiteSettingsSchema.shape.social),
+    defaultValues: settings.social
+  });
+
+  const seoForm = useForm<SiteSettings['seo']>({
+    resolver: zodResolver(SiteSettingsSchema.shape.seo),
+    defaultValues: settings.seo
+  });
+
+  const smtpForm = useForm<SiteSettings['smtp']>({
+    resolver: zodResolver(SiteSettingsSchema.shape.smtp),
+    defaultValues: settings.smtp
+  });
+
+  const securityForm = useForm<SiteSettings['security']>({
+    resolver: zodResolver(SiteSettingsSchema.shape.security),
+    defaultValues: settings.security
   });
 
   const onUpdateSection = async (key: keyof SiteSettings, values: any) => {
     const res = await updateSettingAction(key, values);
-    if (res.success) toast.success(`تم تحديث إعدادات ${key} بنجاح`);
-    else toast.error(res.error || "خطأ في التحديث");
-  };
-
-  // Legacy SMTP Form
-  const smtpForm = useForm<z.infer<typeof SMTPConfigSchema>>({
-    resolver: zodResolver(SMTPConfigSchema),
-    defaultValues: smtpConfig || {
-      host: "smtp.gmail.com",
-      port: 587,
-      fromEmail: "no-reply@taj-schools.com",
-      fromName: "Taj Schools",
-    }
-  });
-
-  const onSMTPSubmit = async (values: z.infer<typeof SMTPConfigSchema>) => {
-    const res = await updateSMTPConfig(values);
-    if (res.success) toast.success("تم تحديث إعدادات SMTP بنجاح");
-    else toast.error(res.error || "خطأ غير معروف");
+    if (res.success) toast.success(`تم تحديث قسم [${key}] بنجاح`);
+    else toast.error(res.error || "فشل في التحديث");
   };
 
   return (
     <div className="space-y-6" dir="rtl">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-black text-deep-navy tracking-tight">إعدادات المنصة المتكاملة ⚙️</h1>
-        <p className="text-gray-500 font-medium">نظام التحكم العالمي (Settings Engine v2.0) - إصدار 2026</p>
+        <h1 className="text-4xl font-black text-deep-navy tracking-tight">التحكم العالمي (Settings Engine) ⚙️</h1>
+        <p className="text-gray-500 font-medium">نظام الإعدادات المتكامل - الإصدار الموحد 2026</p>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="bg-white/50 border border-white/20 shadow-sm mb-8 overflow-x-auto justify-start h-auto p-1.5 gap-1.5 flex-nowrap">
+        <TabsList className="bg-white/50 border border-white/20 shadow-sm mb-8 overflow-x-auto justify-start h-auto p-1.5 gap-1.5 flex-nowrap scrollbar-hide">
           <TabsTrigger value="general" className="gap-2 h-11"><Globe className="w-4 h-4" /> عام</TabsTrigger>
           <TabsTrigger value="academic" className="gap-2 h-11"><GraduationCap className="w-4 h-4" /> أكاديمي</TabsTrigger>
           <TabsTrigger value="contact" className="gap-2 h-11"><Phone className="w-4 h-4" /> التواصل</TabsTrigger>
@@ -105,14 +83,11 @@ export default function SettingsForm({ globalSettings, smtpConfig, settings }: S
           <TabsTrigger value="security" className="gap-2 h-11"><ShieldCheck className="w-4 h-4" /> الأمان</TabsTrigger>
         </TabsList>
 
-        {/* General Settings */}
         <TabsContent value="general">
-          <form onSubmit={generalForm.handleSubmit((val) => onUpdateSection('general', val))}>
+          <form onSubmit={generalForm.handleSubmit((v) => onUpdateSection('general', v))}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="card-premium p-6">
-                    <CardHeader className="px-0 pt-0">
-                        <CardTitle className="flex items-center gap-2"><Globe className="w-5 h-5 text-primary"/> الهوية الأساسية</CardTitle>
-                    </CardHeader>
+                    <CardHeader className="px-0 pt-0"><CardTitle className="flex items-center gap-2"><Globe className="w-5 h-5 text-primary"/> هوية المنصة</CardTitle></CardHeader>
                     <CardContent className="px-0 pb-0 space-y-4">
                         <div className="space-y-2">
                             <Label>اسم المدرسة (عربي)</Label>
@@ -131,220 +106,151 @@ export default function SettingsForm({ globalSettings, smtpConfig, settings }: S
                             />
                             <ImageUpload
                                 bucket="settings"
-                                label="أيقونة المتصفح (Favicon)"
+                                label="أيقونة (Favicon)"
                                 currentImage={generalForm.watch("faviconUrl") || undefined}
                                 onUploadComplete={(url) => generalForm.setValue("faviconUrl", url)}
                             />
                         </div>
                     </CardContent>
                 </Card>
-
                 <Card className="card-premium p-6">
-                    <CardHeader className="px-0 pt-0">
-                        <CardTitle className="flex items-center gap-2"><Palette className="w-5 h-5 text-vibrant-orange"/> المظهر والبراند</CardTitle>
-                    </CardHeader>
+                    <CardHeader className="px-0 pt-0"><CardTitle className="flex items-center gap-2"><Palette className="w-5 h-5 text-vibrant-orange"/> الثيم والألوان</CardTitle></CardHeader>
                     <CardContent className="px-0 pb-0 space-y-4">
                         <div className="space-y-2">
                             <Label>اللون الأساسي</Label>
                             <div className="flex gap-2">
                                 <Input {...generalForm.register("primaryColor")} type="color" className="h-12 w-20 p-1 rounded-xl" />
-                                <Input {...generalForm.register("primaryColor")} dir="ltr" className="h-12 flex-1 rounded-xl font-sans" />
+                                <Input {...generalForm.register("primaryColor")} dir="ltr" className="h-12 flex-1 rounded-xl font-sans uppercase" />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label>اللون الثانوي</Label>
                             <div className="flex gap-2">
                                 <Input {...generalForm.register("secondaryColor")} type="color" className="h-12 w-20 p-1 rounded-xl" />
-                                <Input {...generalForm.register("secondaryColor")} dir="ltr" className="h-12 flex-1 rounded-xl font-sans" />
+                                <Input {...generalForm.register("secondaryColor")} dir="ltr" className="h-12 flex-1 rounded-xl font-sans uppercase" />
                             </div>
                         </div>
                         <div className="pt-4 flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <div>
-                                <p className="font-bold text-deep-navy text-sm">Global Privacy Control (GPC)</p>
-                                <p className="text-xs text-gray-500">تفعيل إشارة الخصوصية العالمية للامتثال</p>
+                                <p className="font-bold text-deep-navy text-sm">GPC Signal (Global Privacy Control)</p>
+                                <p className="text-xs text-gray-500">تحميل إشارة الخصوصية الحديثة تلقائياً.</p>
                             </div>
-                            <input
-                                type="checkbox"
-                                {...generalForm.register("gpcEnabled")}
-                                className="w-6 h-6 rounded-md accent-primary"
-                            />
+                            <input type="checkbox" {...generalForm.register("gpcEnabled")} className="w-6 h-6 rounded-md accent-primary" />
                         </div>
                     </CardContent>
                 </Card>
             </div>
-            <div className="flex justify-end mt-6">
-                <SubmitButton loading={generalForm.formState.isSubmitting} />
-            </div>
+            <div className="flex justify-end mt-6"><SubmitButton loading={generalForm.formState.isSubmitting} /></div>
           </form>
         </TabsContent>
 
-        {/* Academic Settings */}
         <TabsContent value="academic">
-          <form onSubmit={academicForm.handleSubmit((val) => onUpdateSection('academic', val))}>
-            <Card className="card-premium p-8">
-                <CardHeader className="px-0 pt-0">
-                    <CardTitle>الإعدادات الأكاديمية</CardTitle>
-                    <CardDescription>التحكم في حالة التسجيل والفصول الدراسية.</CardDescription>
-                </CardHeader>
+          <form onSubmit={academicForm.handleSubmit((v) => onUpdateSection('academic', v))}>
+             <Card className="card-premium p-8">
+                <CardHeader className="px-0 pt-0"><CardTitle>الإعدادات الأكاديمية</CardTitle></CardHeader>
                 <CardContent className="px-0 pb-0 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <Label>حالة التسجيل</Label>
-                        <select
-                            {...academicForm.register("registrationStatus")}
-                            className="w-full h-12 rounded-xl border border-slate-200 px-4 bg-white"
-                        >
-                            <option value="open">مفتوح</option>
-                            <option value="closed">مغلق</option>
-                            <option value="coming_soon">قريباً</option>
+                        <select {...academicForm.register("registrationStatus")} className="w-full h-12 rounded-xl border border-slate-200 px-4 bg-white">
+                            <option value="open">مفتوح (Open)</option>
+                            <option value="closed">مغلق (Closed)</option>
+                            <option value="coming_soon">قريباً (Coming Soon)</option>
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <Label>الفصل الدراسي الحالي</Label>
-                        <Input {...academicForm.register("currentSemester")} className="h-12 rounded-xl" placeholder="مثال: الفصل الأول 2026/2027" />
+                        <Label>العام الدراسي</Label>
+                        <Input {...academicForm.register("academicYear")} className="h-12 rounded-xl" placeholder="2026/2027" />
                     </div>
                 </CardContent>
-                <div className="flex justify-end mt-8">
-                    <SubmitButton loading={academicForm.formState.isSubmitting} />
-                </div>
-            </Card>
+                <div className="flex justify-end mt-8"><SubmitButton loading={academicForm.formState.isSubmitting} /></div>
+             </Card>
           </form>
         </TabsContent>
 
-        {/* Contact & Social Settings */}
         <TabsContent value="contact">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <form onSubmit={contactForm.handleSubmit((val) => onUpdateSection('contact', val))}>
+            <form onSubmit={contactForm.handleSubmit((v) => onUpdateSection('contact', v))}>
                 <Card className="card-premium p-6">
                     <CardHeader className="px-0 pt-0"><CardTitle>بيانات التواصل</CardTitle></CardHeader>
                     <CardContent className="px-0 pb-0 space-y-4">
-                        <div className="space-y-2">
-                            <Label>البريد الرسمي</Label>
-                            <Input {...contactForm.register("email")} dir="ltr" className="h-12 rounded-xl font-sans" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>رقم الهاتف</Label>
-                            <Input {...contactForm.register("phone")} dir="ltr" className="h-12 rounded-xl font-sans" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>العنوان (عربي)</Label>
-                            <Input {...contactForm.register("addressAr")} className="h-12 rounded-xl" />
-                        </div>
+                        <div className="space-y-2"><Label>البريد الإلكتروني</Label><Input {...contactForm.register("email")} dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                        <div className="space-y-2"><Label>رقم الهاتف</Label><Input {...contactForm.register("phone")} dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                        <div className="space-y-2"><Label>واتساب (WhatsApp)</Label><Input {...contactForm.register("whatsapp")} dir="ltr" className="h-12 rounded-xl font-sans" /></div>
                     </CardContent>
-                    <div className="flex justify-end mt-6">
-                        <SubmitButton loading={contactForm.formState.isSubmitting} />
-                    </div>
+                    <div className="flex justify-end mt-6"><SubmitButton loading={contactForm.formState.isSubmitting} /></div>
                 </Card>
             </form>
-
-            <form onSubmit={socialForm.handleSubmit((val) => onUpdateSection('social', val))}>
+            <form onSubmit={socialForm.handleSubmit((v) => onUpdateSection('social', v))}>
                 <Card className="card-premium p-6">
-                    <CardHeader className="px-0 pt-0"><CardTitle>التواصل الاجتماعي</CardTitle></CardHeader>
+                    <CardHeader className="px-0 pt-0"><CardTitle>روابط التواصل الاجتماعي</CardTitle></CardHeader>
                     <CardContent className="px-0 pb-0 space-y-4">
-                        <div className="space-y-2">
-                            <Label>Facebook</Label>
-                            <Input {...socialForm.register("facebook")} dir="ltr" className="h-11 rounded-xl font-sans" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Instagram</Label>
-                            <Input {...socialForm.register("instagram")} dir="ltr" className="h-11 rounded-xl font-sans" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>YouTube</Label>
-                            <Input {...socialForm.register("youtube")} dir="ltr" className="h-11 rounded-xl font-sans" />
-                        </div>
+                        <div className="space-y-2"><Label>Facebook</Label><Input {...socialForm.register("facebook")} dir="ltr" className="h-11 rounded-xl font-sans" /></div>
+                        <div className="space-y-2"><Label>Instagram</Label><Input {...socialForm.register("instagram")} dir="ltr" className="h-11 rounded-xl font-sans" /></div>
+                        <div className="space-y-2"><Label>Twitter / X</Label><Input {...socialForm.register("twitter")} dir="ltr" className="h-11 rounded-xl font-sans" /></div>
                     </CardContent>
-                    <div className="flex justify-end mt-6">
-                        <SubmitButton loading={socialForm.formState.isSubmitting} />
-                    </div>
+                    <div className="flex justify-end mt-6"><SubmitButton loading={socialForm.formState.isSubmitting} /></div>
                 </Card>
             </form>
           </div>
         </TabsContent>
 
-        {/* SEO & AI Settings */}
         <TabsContent value="seo">
-          <form onSubmit={seoForm.handleSubmit((val) => onUpdateSection('seo', val))}>
+          <form onSubmit={seoForm.handleSubmit((v) => onUpdateSection('seo', v))}>
             <Card className="card-premium p-8">
                 <CardHeader className="px-0 pt-0">
-                    <CardTitle>محركات البحث وذكاء AI (Schema.org)</CardTitle>
-                    <CardDescription>تحسين ظهور المدرسة في محركات البحث التقليدية والذكية.</CardDescription>
+                    <CardTitle>محركات البحث و AI Search</CardTitle>
+                    <CardDescription>تحسين المدرسة في أرشيفات جوجل وذكاء ChatGPT.</CardDescription>
                 </CardHeader>
-                <CardContent className="px-0 pb-0 space-y-6">
-                    <div className="space-y-2">
-                        <Label>اسم المنظمة (SEO)</Label>
-                        <Input {...seoForm.register("organizationName")} className="h-12 rounded-xl" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>وصف الموقع (Meta Description)</Label>
-                        <textarea
-                            {...seoForm.register("description")}
-                            className="w-full min-h-[100px] rounded-xl border border-slate-200 p-4 focus:ring-2 focus:ring-primary/20 outline-none"
-                        />
-                    </div>
-                    <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-blue-800 text-sm">
-                        نظام Settings Engine يقوم تلقائياً بتوليد JSON-LD Schema للـ EducationalOrganization بناءً على هذه البيانات.
-                    </div>
+                <CardContent className="px-0 pb-0 space-y-4">
+                    <div className="space-y-2"><Label>اسم المؤسسة الرسمي</Label><Input {...seoForm.register("organizationName")} className="h-12 rounded-xl" /></div>
+                    <div className="space-y-2"><Label>وصف الميتا (Meta Description)</Label><textarea {...seoForm.register("description")} className="w-full min-h-[100px] rounded-xl border border-slate-200 p-4 outline-none focus:ring-2 focus:ring-primary/20" /></div>
+                    <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 text-xs text-primary leading-relaxed">تنبيه: سيقوم النظام تلقائياً بإنشاء JSON-LD Schema متكامل من نوع EducationalOrganization لضمان ظهورك في الصدارة.</div>
                 </CardContent>
-                <div className="flex justify-end mt-8">
-                    <SubmitButton loading={seoForm.formState.isSubmitting} />
-                </div>
+                <div className="flex justify-end mt-8"><SubmitButton loading={seoForm.formState.isSubmitting} /></div>
             </Card>
           </form>
         </TabsContent>
 
         <TabsContent value="smtp">
-          <form onSubmit={smtpForm.handleSubmit(onSMTPSubmit)}>
+          <form onSubmit={smtpForm.handleSubmit((v) => onUpdateSection('smtp', v))}>
             <Card className="card-premium p-8">
-                <CardHeader className="px-0 pt-0">
-                    <CardTitle>إعدادات خادم البريد (SMTP)</CardTitle>
-                    <CardDescription>تستخدم لإرسال رسائل الترحيب وتغيير كلمة السر.</CardDescription>
-                </CardHeader>
+                <CardHeader className="px-0 pt-0"><CardTitle>خادم البريد الإلكتروني (SMTP)</CardTitle></CardHeader>
                 <CardContent className="px-0 pb-0 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2"><Label>Host</Label><Input {...smtpForm.register("host")} dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                    <div className="space-y-2"><Label>Port</Label><Input {...smtpForm.register("port", { valueAsNumber: true })} type="number" dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                    <div className="space-y-2"><Label>Username</Label><Input {...smtpForm.register("user")} dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                    <div className="space-y-2"><Label>Password</Label><Input {...smtpForm.register("pass")} type="password" dir="ltr" className="h-12 rounded-xl font-sans" /></div>
+                    <div className="space-y-2"><Label>From Name</Label><Input {...smtpForm.register("fromName")} className="h-12 rounded-xl" /></div>
                     <div className="space-y-2">
-                        <Label>Host (المضيف)</Label>
-                        <Input {...smtpForm.register("host")} dir="ltr" className="h-12 rounded-xl font-sans" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Port (المنفذ)</Label>
-                        <Input {...smtpForm.register("port", { valueAsNumber: true })} type="number" dir="ltr" className="h-12 rounded-xl font-sans" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Username (المستخدم)</Label>
-                        <Input {...smtpForm.register("user")} dir="ltr" className="h-12 rounded-xl font-sans" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Password (كلمة المرور)</Label>
-                        <Input {...smtpForm.register("pass")} type="password" dir="ltr" className="h-12 rounded-xl font-sans" />
+                        <Label>التشفير (Encryption)</Label>
+                        <select {...smtpForm.register("encryption")} className="w-full h-12 rounded-xl border border-slate-200 px-4 bg-white">
+                            <option value="TLS">TLS</option>
+                            <option value="SSL">SSL</option>
+                            <option value="None">None</option>
+                        </select>
                     </div>
                 </CardContent>
-                <div className="flex justify-end mt-8">
-                    <SubmitButton loading={smtpForm.formState.isSubmitting} />
-                </div>
+                <div className="flex justify-end mt-8"><SubmitButton loading={smtpForm.formState.isSubmitting} /></div>
             </Card>
           </form>
         </TabsContent>
 
         <TabsContent value="security">
-             <Card className="card-premium p-8 border-red-100 bg-red-50/10">
+          <form onSubmit={securityForm.handleSubmit((v) => onUpdateSection('security', v))}>
+            <Card className="card-premium p-8 border-red-100 bg-red-50/5">
                 <CardHeader className="px-0 pt-0">
-                    <CardTitle className="text-red-600 flex items-center gap-2"><ShieldCheck className="w-6 h-6"/> الأمان المتقدم</CardTitle>
-                    <CardDescription>إعدادات حماية المنصة والنسخ الاحتياطي.</CardDescription>
+                    <CardTitle className="text-red-600 flex items-center gap-2"><ShieldCheck className="w-5 h-5"/> الأمان المتقدم</CardTitle>
                 </CardHeader>
-                <CardContent className="px-0 pb-0 space-y-4">
-                    <div className="p-6 bg-white rounded-2xl border border-red-100 space-y-4">
-                         <div className="flex items-center justify-between">
-                            <p className="font-bold text-deep-navy">وضع الصيانة (Maintenance Mode)</p>
-                            <div className="w-12 h-6 bg-slate-200 rounded-full relative cursor-not-allowed opacity-50">
-                                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div>
-                            </div>
-                         </div>
-                         <p className="text-xs text-gray-500">عند تفعيله، سيتمكن الأدمن فقط من دخول الموقع.</p>
+                <CardContent className="px-0 pb-0 space-y-6">
+                    <div className="p-4 bg-white rounded-2xl border border-slate-100 flex items-center justify-between">
+                        <div><p className="font-bold text-deep-navy">وضع الصيانة (Maintenance Mode)</p><p className="text-xs text-gray-500">إغلاق الموقع للعامة والسماح بدخول الأدمن فقط.</p></div>
+                        <input type="checkbox" {...securityForm.register("maintenanceMode")} className="w-6 h-6 rounded-md accent-red-600" />
                     </div>
-                    <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed border-2 hover:bg-slate-50">
-                        تصدير كافة الإعدادات (JSON Export)
-                    </Button>
+                    <div className="space-y-2"><Label>مدة الجلسة (دقائق)</Label><Input {...securityForm.register("sessionTimeout", { valueAsNumber: true })} type="number" dir="ltr" className="h-12 rounded-xl font-sans" /></div>
                 </CardContent>
-             </Card>
+                <div className="flex justify-end mt-8"><SubmitButton loading={securityForm.formState.isSubmitting} /></div>
+            </Card>
+          </form>
         </TabsContent>
       </Tabs>
     </div>
@@ -353,12 +259,8 @@ export default function SettingsForm({ globalSettings, smtpConfig, settings }: S
 
 function SubmitButton({ loading }: { loading: boolean }) {
     return (
-        <Button
-            type="submit"
-            disabled={loading}
-            className="h-14 px-10 rounded-2xl font-black text-lg shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 btn-interactive"
-        >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5 ml-2" /> حفظ القسم</>}
+        <Button type="submit" disabled={loading} className="h-14 px-10 rounded-2xl font-black text-lg shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 btn-interactive">
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5 ml-2" /> حفظ التغييرات</>}
         </Button>
     )
 }

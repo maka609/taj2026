@@ -24,13 +24,14 @@ import {
   TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { type SiteSettings } from "@/lib/settings-schema";
 
 interface HomeClientProps {
   locale: string;
   sliders: any[];
   news: any[];
   testimonials: any[];
-  settings?: any;
+  settings: SiteSettings;
 }
 
 export default function HomeClient({ locale, sliders, news, testimonials, settings }: HomeClientProps) {
@@ -77,8 +78,8 @@ export default function HomeClient({ locale, sliders, news, testimonials, settin
                     transition={{ duration: 0.6, ease: "easeOut" }}
                   >
                     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-deep-navy leading-[1.1] tracking-tight">
-                        {isRtl ? (settings?.heroTitleAr || sliders[currentSlider]?.titleAr || "نصنع قادة") : (settings?.heroTitleEn || sliders[currentSlider]?.titleEn || "Building Leaders")} <br />
-                        <span className="text-primary italic">{isRtl ? (settings?.heroSubtitleAr || sliders[currentSlider]?.descriptionAr || "الغد اليوم.") : (settings?.heroSubtitleEn || sliders[currentSlider]?.descriptionEn || "Of Tomorrow.")}</span>
+                        {isRtl ? (settings?.general?.siteNameAr || sliders[currentSlider]?.titleAr || "نصنع قادة") : (settings?.general?.siteNameEn || sliders[currentSlider]?.titleEn || "Building Leaders")} <br />
+                        <span className="text-primary italic">{isRtl ? (settings?.academic?.currentSemester || sliders[currentSlider]?.descriptionAr || "الغد اليوم.") : (settings?.academic?.academicYear || sliders[currentSlider]?.descriptionEn || "Of Tomorrow.")}</span>
                     </h1>
                   </motion.div>
                 </AnimatePresence>
