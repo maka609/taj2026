@@ -8,6 +8,7 @@ import { createNews, updateNews } from "@/actions/news";
 import { Loader2, Type, FileText, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ImageUpload from "@/components/admin/ui/ImageUpload";
 import { toast } from "sonner";
 
 // News Schema
@@ -16,7 +17,7 @@ const newsSchema = z.object({
   titleEn: z.string().min(5, { message: "English title must be at least 5 characters" }),
   contentAr: z.string().min(10, { message: "المحتوى العربي قصير جداً" }),
   contentEn: z.string().min(10, { message: "English content is too short" }),
-  imageUrl: z.string().url({ message: "الرجاء إدخال رابط صورة صحيح" }).or(z.literal("")),
+  imageUrl: z.string().optional().nullable(),
 });
 
 type NewsFormValues = z.infer<typeof newsSchema>;
@@ -39,6 +40,8 @@ export function NewsForm({ initialData, onSuccess }: NewsFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<NewsFormValues>({
     resolver: zodResolver(newsSchema),
@@ -129,17 +132,13 @@ export function NewsForm({ initialData, onSuccess }: NewsFormProps) {
           {errors.contentEn && <p className="text-red-500 text-xs font-semibold">{errors.contentEn.message}</p>}
         </div>
 
-        {/* Image URL */}
+        {/* Image Upload */}
         <div className="space-y-3 md:col-span-2">
-          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
-            <ImageIcon className="w-4 h-4 text-primary" />
-            رابط صورة الخبر
-          </label>
-          <Input
-            {...register("imageUrl")}
-            dir="ltr"
-            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans"
-            placeholder="https://example.com/news-image.jpg"
+          <ImageUpload
+            bucket="news"
+            label="صورة الخبر"
+            currentImage={watch("imageUrl") || undefined}
+            onUploadComplete={(url) => setValue("imageUrl", url)}
           />
           {errors.imageUrl && <p className="text-red-500 text-xs font-semibold">{errors.imageUrl.message}</p>}
         </div>

@@ -8,6 +8,7 @@ import { createStaff, updateStaff } from "@/actions/staff";
 import { Loader2, User, Briefcase, Layout, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ImageUpload from "@/components/admin/ui/ImageUpload";
 import { toast } from "sonner";
 
 // Staff Schema
@@ -17,7 +18,7 @@ const staffSchema = z.object({
   roleAr: z.string().min(3, { message: "الوظيفة بالعربي يجب أن تكون 3 أحرف على الأقل" }),
   roleEn: z.string().min(3, { message: "English role must be at least 3 characters" }),
   department: z.string().optional(),
-  imageUrl: z.string().url({ message: "الرجاء إدخال رابط صورة صحيح" }).or(z.literal("")),
+  imageUrl: z.string().optional().nullable(),
   order: z.number().int().min(0),
 });
 
@@ -43,6 +44,8 @@ export function StaffForm({ initialData, onSuccess }: StaffFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<StaffFormValues>({
     resolver: zodResolver(staffSchema),
@@ -162,17 +165,13 @@ export function StaffForm({ initialData, onSuccess }: StaffFormProps) {
           {errors.order && <p className="text-red-500 text-xs font-semibold">{errors.order.message}</p>}
         </div>
 
-        {/* Image URL */}
+        {/* Image Upload */}
         <div className="space-y-3 md:col-span-2">
-          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
-            <ImageIcon className="w-4 h-4 text-primary" />
-            رابط الصورة الشخصية
-          </label>
-          <Input
-            {...register("imageUrl")}
-            dir="ltr"
-            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans"
-            placeholder="https://example.com/avatar.jpg"
+          <ImageUpload
+            bucket="staff"
+            label="الصورة الشخصية"
+            currentImage={watch("imageUrl") || undefined}
+            onUploadComplete={(url) => setValue("imageUrl", url)}
           />
           {errors.imageUrl && <p className="text-red-500 text-xs font-semibold">{errors.imageUrl.message}</p>}
         </div>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import ImageUpload from "@/components/admin/ui/ImageUpload";
 import { toast } from "sonner";
 import { Loader2, Save, Globe, Mail, Layout, Palette, Phone, MapPin } from "lucide-react";
 import { z } from "zod";
@@ -89,8 +90,12 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
                     <Input {...globalForm.register("siteNameEn")} dir="ltr" className="h-12 rounded-xl font-sans" />
                   </div>
                   <div className="space-y-2">
-                    <Label>رابط اللوجو</Label>
-                    <Input {...globalForm.register("logoUrl")} dir="ltr" className="h-12 rounded-xl font-sans" placeholder="https://..." />
+                    <ImageUpload
+                      bucket="settings"
+                      label="شعار الموقع (Logo)"
+                      currentImage={globalForm.watch("logoUrl") || undefined}
+                      onUploadComplete={(url) => globalForm.setValue("logoUrl", url)}
+                    />
                   </div>
                 </CardContent>
               </Card>
