@@ -8,11 +8,12 @@ import { createGalleryImage } from "@/actions/gallery";
 import { Loader2, Type, Layout, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ImageUpload from "@/components/admin/ui/ImageUpload";
 import { toast } from "sonner";
 
 // Gallery Schema
 const gallerySchema = z.object({
-  url: z.string().url({ message: "الرجاء إدخال رابط صورة صحيح" }),
+  url: z.string().min(1, { message: "الرجاء اختيار صورة" }),
   captionAr: z.string().optional().nullable(),
   captionEn: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
@@ -28,6 +29,8 @@ export function GalleryForm({ onSuccess }: GalleryFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<GalleryFormValues>({
     resolver: zodResolver(gallerySchema),
@@ -54,17 +57,13 @@ export function GalleryForm({ onSuccess }: GalleryFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        {/* URL */}
+        {/* URL / Upload */}
         <div className="space-y-3 md:col-span-2">
-          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
-            <ImageIcon className="w-4 h-4 text-primary" />
-            رابط الصورة *
-          </label>
-          <Input
-            {...register("url")}
-            dir="ltr"
-            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans"
-            placeholder="https://example.com/gallery-image.jpg"
+          <ImageUpload
+            bucket="gallery"
+            label="الصورة *"
+            currentImage={watch("url")}
+            onUploadComplete={(url) => setValue("url", url)}
           />
           {errors.url && <p className="text-red-500 text-xs font-semibold">{errors.url.message}</p>}
         </div>

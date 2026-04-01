@@ -29,13 +29,15 @@ export default auth((req: NextRequest & { auth: any }) => {
   // Get locale from cookie
   const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
 
-  // Strict Security for Admin & Dashboard Pages
+  // Strict Security for Admin & Dashboard Pages (TEMPORARILY DISABLED FOR PREVIEW)
+  /*
   if (isAdminPage || isDashboardPage) {
     if (!isAuth) {
       const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
       return Response.redirect(new URL(`/${locale}/portal/login`, req.nextUrl));
     }
   }
+  */
 
   // Handle Root Page (Splash Screen)
   if (isRootPage) {

@@ -8,11 +8,12 @@ import { createSlider, updateSlider } from "@/actions/sliders";
 import { Loader2, Type, Link as LinkIcon, Image as ImageIcon, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ImageUpload from "@/components/admin/ui/ImageUpload";
 import { toast } from "sonner";
 
 // Slider Schema
 const sliderSchema = z.object({
-  imageUrl: z.string().url({ message: "الرجاء إدخال رابط صورة صحيح" }),
+  imageUrl: z.string().min(1, { message: "الرجاء اختيار صورة" }),
   titleAr: z.string().optional().nullable(),
   titleEn: z.string().optional().nullable(),
   link: z.string().url({ message: "الرجاء إدخال رابط صحيح" }).or(z.literal("")).optional().nullable(),
@@ -41,6 +42,8 @@ export function SliderForm({ initialData, onSuccess }: SliderFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SliderFormValues>({
     resolver: zodResolver(sliderSchema),
@@ -75,17 +78,13 @@ export function SliderForm({ initialData, onSuccess }: SliderFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        {/* Image URL */}
+        {/* Image Upload */}
         <div className="space-y-3 md:col-span-2">
-          <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
-            <ImageIcon className="w-4 h-4 text-primary" />
-            رابط الصورة *
-          </label>
-          <Input
-            {...register("imageUrl")}
-            dir="ltr"
-            className="h-12 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white focus:ring-primary/10 transition-all font-sans"
-            placeholder="https://example.com/slider.jpg"
+          <ImageUpload
+            bucket="sliders"
+            label="صورة السلايدر *"
+            currentImage={watch("imageUrl")}
+            onUploadComplete={(url) => setValue("imageUrl", url)}
           />
           {errors.imageUrl && <p className="text-red-500 text-xs font-semibold">{errors.imageUrl.message}</p>}
         </div>
