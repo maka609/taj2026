@@ -3,14 +3,16 @@
 import React from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { GraduationCap, Mail, Phone, MapPin, ArrowUpRight, Share2 } from "lucide-react";
+import { GraduationCap, Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function Footer() {
+export default function Footer({ settings }: { settings?: any }) {
   const t = useTranslations("Navigation");
   const locale = useLocale();
   const isRtl = locale === "ar";
+
+  const siteName = isRtl ? (settings?.siteNameAr || "مدارس تاج النزهة") : (settings?.siteNameEn || "TAJ SCHOOLS");
 
   return (
     <footer className="bg-deep-navy text-gray-400 pt-32 pb-12 overflow-hidden relative" dir={isRtl ? "rtl" : "ltr"}>
@@ -31,7 +33,9 @@ export default function Footer() {
                 <GraduationCap className="w-8 h-8" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-black tracking-tight text-white leading-none">TAJ SCHOOLS</span>
+                <span className="text-2xl font-black tracking-tight text-white leading-none uppercase">
+                    {siteName}
+                </span>
                 <span className="text-[10px] font-black text-primary tracking-[0.2em] uppercase mt-1">International Excellence</span>
               </div>
             </Link>
@@ -41,11 +45,7 @@ export default function Footer() {
                 : "At Taj Schools, we are committed to providing world-class education blending heritage and innovation, building generations capable of leading the future."}
             </p>
             <div className="flex gap-4">
-                {[Share2, Share2, Share2, Share2].map((Icon, i) => (
-                    <Link key={i} href="#" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-white transition-all duration-300">
-                        <Icon className="w-5 h-5" />
-                    </Link>
-                ))}
+               {/* Social links placeholder or dynamic if needed */}
             </div>
           </div>
 
@@ -94,7 +94,7 @@ export default function Footer() {
               <Link href="#" className="flex items-start gap-4 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all group">
                 <MapPin className="w-6 h-6 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-bold leading-relaxed text-gray-400 group-hover:text-gray-200 transition-colors">
-                    {isRtl ? "القاهرة، النزهة الجديدة، شارع النصر، مبنى مدرسة تاج النزهة" : "Al-Nasr St., New Nozha, Cairo, Taj Schools Campus"}
+                    {isRtl ? (settings?.contactAddressAr || "القاهرة، النزهة الجديدة، شارع النصر، مبنى مدرسة تاج النزهة") : (settings?.contactAddressEn || "Al-Nasr St., New Nozha, Cairo, Taj Schools Campus")}
                 </span>
               </Link>
               <div className="flex items-center gap-4 px-2">
@@ -103,7 +103,7 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{isRtl ? "رقم الهاتف" : "Phone"}</span>
-                    <span className="text-sm font-bold font-sans text-gray-200" dir="ltr">+20 123 456 7890</span>
+                    <span className="text-sm font-bold font-sans text-gray-200" dir="ltr">{settings?.contactPhone || "+20 123 456 7890"}</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 px-2">
@@ -112,7 +112,7 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{isRtl ? "البريد الإلكتروني" : "Email"}</span>
-                    <span className="text-sm font-bold text-gray-200">info@taj-schools.com</span>
+                    <span className="text-sm font-bold text-gray-200">{settings?.contactEmail || "info@taj-schools.com"}</span>
                 </div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function Footer() {
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                &copy; {new Date().getFullYear()} TAJ SCHOOLS. INTERNATIONAL EXCELLENCE.
+                &copy; {new Date().getFullYear()} {siteName}. INTERNATIONAL EXCELLENCE.
             </p>
             <div className="flex items-center gap-6">
                 <Link href="#" className="text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">{isRtl ? "سياسة الخصوصية" : "Privacy Policy"}</Link>

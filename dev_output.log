@@ -1,0 +1,277 @@
+
+> taj2026@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.2.1 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 809ms
+⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ Invalid next.config.ts options detected:
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+ GET / 200 in 4.3s (next.js: 3.3s, proxy.ts: 476ms, application-code: 433ms)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+○ Compiling /[locale] ...
+Error fetching sliders: Error [PrismaClientInitializationError]:
+Invalid `prisma.slider.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getSliders (src/actions/sliders.ts:20:21)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  18 | export async function getSliders() {
+  19 |   try {
+> 20 |     const sliders = await prisma.slider.findMany({
+     |                     ^
+  21 |       orderBy: { order: 'asc' }
+  22 |     })
+  23 |     return { success: true, data: sliders } {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Failed to fetch news: Error [PrismaClientInitializationError]:
+Invalid `prisma.news.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getNews (src/actions/news.ts:19:18)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  17 | export async function getNews() {
+  18 |   try {
+> 19 |     const news = await prisma.news.findMany({
+     |                  ^
+  20 |       orderBy: { createdAt: "desc" }
+  21 |     });
+  22 |     return { success: true, data: news }; {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Error fetching testimonials: Error [PrismaClientInitializationError]:
+Invalid `prisma.testimonial.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getTestimonials (src/actions/testimonials.ts:18:26)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  16 |   try {
+  17 |     const where = filter === 'approved' ? { approved: true } : filter === 'pending' ? { ap...
+> 18 |     const testimonials = await prisma.testimonial.findMany({
+     |                          ^
+  19 |       where,
+  20 |       orderBy: { createdAt: 'desc' }
+  21 |     }) {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /ar 200 in 4.9s (next.js: 4.5s, proxy.ts: 65ms, application-code: 394ms)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+ GET / 200 in 122ms (next.js: 22ms, proxy.ts: 12ms, application-code: 87ms)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+Error fetching sliders: Error [PrismaClientInitializationError]:
+Invalid `prisma.slider.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getSliders (src/actions/sliders.ts:20:21)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  18 | export async function getSliders() {
+  19 |   try {
+> 20 |     const sliders = await prisma.slider.findMany({
+     |                     ^
+  21 |       orderBy: { order: 'asc' }
+  22 |     })
+  23 |     return { success: true, data: sliders } {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Failed to fetch news: Error [PrismaClientInitializationError]:
+Invalid `prisma.news.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getNews (src/actions/news.ts:19:18)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  17 | export async function getNews() {
+  18 |   try {
+> 19 |     const news = await prisma.news.findMany({
+     |                  ^
+  20 |       orderBy: { createdAt: "desc" }
+  21 |     });
+  22 |     return { success: true, data: news }; {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Error fetching testimonials: Error [PrismaClientInitializationError]:
+Invalid `prisma.testimonial.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getTestimonials (src/actions/testimonials.ts:18:26)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  16 |   try {
+  17 |     const where = filter === 'approved' ? { approved: true } : filter === 'pending' ? { ap...
+> 18 |     const testimonials = await prisma.testimonial.findMany({
+     |                          ^
+  19 |       where,
+  20 |       orderBy: { createdAt: 'desc' }
+  21 |     }) {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /ar 200 in 220ms (next.js: 65ms, proxy.ts: 26ms, application-code: 129ms)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+Error fetching sliders: Error [PrismaClientInitializationError]:
+Invalid `prisma.slider.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getSliders (src/actions/sliders.ts:20:21)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  18 | export async function getSliders() {
+  19 |   try {
+> 20 |     const sliders = await prisma.slider.findMany({
+     |                     ^
+  21 |       orderBy: { order: 'asc' }
+  22 |     })
+  23 |     return { success: true, data: sliders } {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Failed to fetch news: Error [PrismaClientInitializationError]:
+Invalid `prisma.news.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getNews (src/actions/news.ts:19:18)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  17 | export async function getNews() {
+  18 |   try {
+> 19 |     const news = await prisma.news.findMany({
+     |                  ^
+  20 |       orderBy: { createdAt: "desc" }
+  21 |     });
+  22 |     return { success: true, data: news }; {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+Error fetching testimonials: Error [PrismaClientInitializationError]:
+Invalid `prisma.testimonial.findMany()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:10
+   |
+ 9 |   provider  = "postgresql"
+10 |   url       = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:10)
+    at async getTestimonials (src/actions/testimonials.ts:18:26)
+    at async HomePage (src/app/(localized)/[locale]/page.tsx:13:51)
+  16 |   try {
+  17 |     const where = filter === 'approved' ? { approved: true } : filter === 'pending' ? { ap...
+> 18 |     const testimonials = await prisma.testimonial.findMany({
+     |                          ^
+  19 |       where,
+  20 |       orderBy: { createdAt: 'desc' }
+  21 |     }) {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+ GET /ar 200 in 465ms (next.js: 69ms, proxy.ts: 84ms, application-code: 312ms)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (webpack-internal:///(middleware)/./node_modules/@auth/core/lib/utils/assert.js:66:16)
+    at Auth (webpack-internal:///(middleware)/./node_modules/@auth/core/index.js:91:95)
+ GET /ar/grid.svg 404 in 1777ms (next.js: 1569ms, proxy.ts: 25ms, application-code: 183ms)
+ GET /ar/about 200 in 3.3s (next.js: 2.7s, proxy.ts: 21ms, application-code: 530ms)

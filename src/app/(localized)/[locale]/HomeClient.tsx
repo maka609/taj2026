@@ -30,9 +30,10 @@ interface HomeClientProps {
   sliders: any[];
   news: any[];
   testimonials: any[];
+  settings?: any;
 }
 
-export default function HomeClient({ locale, sliders, news, testimonials }: HomeClientProps) {
+export default function HomeClient({ locale, sliders, news, testimonials, settings }: HomeClientProps) {
   const [currentSlider, setCurrentSlider] = React.useState(0);
   const isRtl = locale === "ar";
 
@@ -76,8 +77,8 @@ export default function HomeClient({ locale, sliders, news, testimonials }: Home
                     transition={{ duration: 0.6, ease: "easeOut" }}
                   >
                     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-deep-navy leading-[1.1] tracking-tight">
-                        {(isRtl ? sliders[currentSlider]?.titleAr : sliders[currentSlider]?.titleEn) || (isRtl ? "نصنع قادة" : "Building Leaders")} <br />
-                        <span className="text-primary italic">{(isRtl ? sliders[currentSlider]?.descriptionAr : sliders[currentSlider]?.descriptionEn) || (isRtl ? "الغد اليوم." : "Of Tomorrow.")}</span>
+                        {isRtl ? (settings?.heroTitleAr || sliders[currentSlider]?.titleAr || "نصنع قادة") : (settings?.heroTitleEn || sliders[currentSlider]?.titleEn || "Building Leaders")} <br />
+                        <span className="text-primary italic">{isRtl ? (settings?.heroSubtitleAr || sliders[currentSlider]?.descriptionAr || "الغد اليوم.") : (settings?.heroSubtitleEn || sliders[currentSlider]?.descriptionEn || "Of Tomorrow.")}</span>
                     </h1>
                   </motion.div>
                 </AnimatePresence>

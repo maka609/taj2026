@@ -221,6 +221,49 @@ model SiteSetting {
   updatedAt DateTime @updatedAt
 }
 
+model GlobalSettings {
+  id              String   @id @default("master")
+  siteNameAr      String   @default("مدارس تاج النزهة")
+  siteNameEn      String   @default("Taj Schools")
+  logoUrl         String?
+
+  // Hero Section
+  heroTitleAr     String   @default("نصنع قادة الغد اليوم")
+  heroTitleEn     String   @default("Building Tomorrow's Leaders Today")
+  heroSubtitleAr  String?
+  heroSubtitleEn  String?
+
+  // Colors (OKLCH or Hex)
+  primaryColor    String   @default("#7c3aed")
+  secondaryColor  String   @default("#ea580c")
+
+  // Social Links
+  facebookUrl     String?
+  instagramUrl    String?
+  youtubeUrl      String?
+  twitterUrl      String?
+
+  // Contact Info
+  contactEmail    String   @default("info@taj-schools.com")
+  contactPhone    String?
+  contactAddressAr String?
+  contactAddressEn String?
+
+  updatedAt       DateTime @updatedAt
+}
+
+model SMTPConfig {
+  id            String   @id @default("master")
+  host          String   @default("smtp.gmail.com")
+  port          Int      @default(587)
+  user          String?
+  pass          String?
+  fromEmail     String   @default("no-reply@taj-schools.com")
+  fromName      String   @default("Taj Schools")
+
+  updatedAt     DateTime @updatedAt
+}
+
 model SecurityLog {
   id        String   @id @default(cuid())
   action    String
