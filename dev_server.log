@@ -1,0 +1,44 @@
+
+> taj2026@0.1.0 dev
+> next dev --webpack
+
+node:internal/modules/cjs/loader:1386
+  throw err;
+  ^
+
+Error: Cannot find module './app-paths'
+Require stack:
+- /app/node_modules/next/dist/shared/lib/router/utils/interception-routes.js
+- /app/node_modules/next/dist/shared/lib/router/utils/is-dynamic.js
+- /app/node_modules/next/dist/shared/lib/router/utils/index.js
+- /app/node_modules/next/dist/server/lib/router-utils/filesystem.js
+- /app/node_modules/next/dist/server/lib/router-server.js
+- /app/node_modules/next/dist/server/lib/start-server.js
+    at Function.<anonymous> (node:internal/modules/cjs/loader:1383:15)
+    at /app/node_modules/next/dist/server/require-hook.js:68:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Function._load (node:internal/modules/cjs/loader:1192:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1463:12)
+    at mod.require (/app/node_modules/next/dist/server/require-hook.js:79:28)
+    at require (node:internal/modules/helpers:147:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/app/node_modules/next/dist/shared/lib/router/utils/interception-routes.js',
+    '/app/node_modules/next/dist/shared/lib/router/utils/is-dynamic.js',
+    '/app/node_modules/next/dist/shared/lib/router/utils/index.js',
+    '/app/node_modules/next/dist/server/lib/router-utils/filesystem.js',
+    '/app/node_modules/next/dist/server/lib/router-server.js',
+    '/app/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+
+Node.js v22.22.1
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+[?25h
