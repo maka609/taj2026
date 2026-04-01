@@ -9,7 +9,7 @@ const sliderSchema = z.object({
   imageUrl: z.string().min(1), // يدعم URL أو Base64
   titleAr: z.string().optional().nullable(),
   titleEn: z.string().optional().nullable(),
-  link: z.string().url().optional().nullable(),
+  link: z.string().url().or(z.literal("")).optional().nullable(),
   order: z.number().int().default(0),
   active: z.boolean().default(true),
 })
@@ -42,6 +42,9 @@ export async function createSlider(data: z.infer<typeof sliderSchema>) {
     return { success: true, data: slider }
   } catch (error) {
     console.error('Error creating slider:', error)
+    if (error instanceof z.ZodError) {
+      return { success: false, error: `خطأ في البيانات: ${error.errors[0].message}` }
+    }
     return { success: false, error: 'فشل في إضافة السلايدر' }
   }
 }
