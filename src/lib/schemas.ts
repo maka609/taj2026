@@ -3,13 +3,16 @@ import { z } from "zod";
 export const GlobalSettingsSchema = z.object({
   siteNameAr: z.string().min(1, "اسم الموقع بالعربية مطلوب"),
   siteNameEn: z.string().min(1, "Site Name in English is required"),
-  logoUrl: z.string().min(1).optional().nullable(), // يدعم URL أو Base64
+  logoUrl: z.string().min(1).optional().nullable(),
+  faviconUrl: z.string().min(1).optional().nullable(),
   heroTitleAr: z.string().min(1, "عنوان الهيرو بالعربية مطلوب"),
   heroTitleEn: z.string().min(1, "Hero Title in English is required"),
   heroSubtitleAr: z.string().optional().nullable(),
   heroSubtitleEn: z.string().optional().nullable(),
   primaryColor: z.string().min(1),
   secondaryColor: z.string().min(1),
+  isAdmissionOpen: z.boolean().default(true),
+  currentYear: z.string().min(1).default("2025/2026"),
   facebookUrl: z.string().min(1).optional().or(z.literal("")).nullable(),
   instagramUrl: z.string().min(1).optional().or(z.literal("")).nullable(),
   youtubeUrl: z.string().min(1).optional().or(z.literal("")).nullable(),
@@ -18,6 +21,14 @@ export const GlobalSettingsSchema = z.object({
   contactPhone: z.string().optional().nullable(),
   contactAddressAr: z.string().optional().nullable(),
   contactAddressEn: z.string().optional().nullable(),
+  seoDescriptionAr: z.string().optional().nullable(),
+  seoDescriptionEn: z.string().optional().nullable(),
+  seoKeywordsAr: z.string().optional().nullable(),
+  seoKeywordsEn: z.string().optional().nullable(),
+  orgTaxId: z.string().optional().nullable(),
+  orgFoundingDate: z.string().optional().nullable(),
+  enableGPC: z.boolean().default(true),
+  showCookieBanner: z.boolean().default(true),
 });
 
 export const SMTPConfigSchema = z.object({

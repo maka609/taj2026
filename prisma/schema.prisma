@@ -226,6 +226,7 @@ model GlobalSettings {
   siteNameAr      String   @default("مدارس تاج النزهة")
   siteNameEn      String   @default("Taj Schools")
   logoUrl         String?
+  faviconUrl      String?
 
   // Hero Section
   heroTitleAr     String   @default("نصنع قادة الغد اليوم")
@@ -233,9 +234,13 @@ model GlobalSettings {
   heroSubtitleAr  String?
   heroSubtitleEn  String?
 
-  // Colors (OKLCH or Hex)
+  // Colors (Hex/OKLCH)
   primaryColor    String   @default("#7c3aed")
   secondaryColor  String   @default("#ea580c")
+
+  // Status & Admission
+  isAdmissionOpen Boolean  @default(true)
+  currentYear     String   @default("2025/2026")
 
   // Social Links
   facebookUrl     String?
@@ -248,6 +253,18 @@ model GlobalSettings {
   contactPhone    String?
   contactAddressAr String?
   contactAddressEn String?
+
+  // SEO & AI Search (Schema.org)
+  seoDescriptionAr String? @db.Text
+  seoDescriptionEn String? @db.Text
+  seoKeywordsAr    String? @db.Text
+  seoKeywordsEn    String? @db.Text
+  orgTaxId         String? // الرقم الضريبي للمؤسسة
+  orgFoundingDate  String? // تاريخ التأسيس
+
+  // Privacy & Global Controls
+  enableGPC       Boolean @default(true) // Global Privacy Control
+  showCookieBanner Boolean @default(true)
 
   updatedAt       DateTime @updatedAt
 }
