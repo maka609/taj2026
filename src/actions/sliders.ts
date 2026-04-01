@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 // Schema للتحقق من البيانات
 const sliderSchema = z.object({
-  imageUrl: z.string().url(),
+  imageUrl: z.string().min(1), // يدعم URL أو Base64
   titleAr: z.string().optional().nullable(),
   titleEn: z.string().optional().nullable(),
   link: z.string().url().optional().nullable(),
