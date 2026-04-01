@@ -54,7 +54,9 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
       .from(bucket)
       .getPublicUrl(fileName)
 
-    return urlData.publicUrl
+    // لضمان الحصول على رابط نظيف بدون بارامترات إضافية (Cache buster) إذا لم تكن مطلوبة
+    const cleanUrl = urlData.publicUrl.split('?')[0];
+    return cleanUrl;
   } catch (error: any) {
     console.error('Upload error:', error)
     throw error
@@ -130,8 +132,10 @@ export async function uploadFile(
       .from(bucket)
       .getPublicUrl(fileName)
 
+    const cleanUrl = urlData.publicUrl.split('?')[0];
+
     return {
-      url: urlData.publicUrl,
+      url: cleanUrl,
       size: file.size
     }
   } catch (error: any) {
