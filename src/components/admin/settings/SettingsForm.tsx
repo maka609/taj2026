@@ -4,6 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateGlobalSettings, updateSMTPConfig } from "@/actions/settings";
+import { useEffect } from "react";
 import { GlobalSettingsSchema, SMTPConfigSchema } from "@/lib/schemas";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -51,6 +52,14 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
     else toast.error(res.error || "خطأ غير معروف");
   };
 
+  // متابعة الأخطاء لعرضها في حال لم يعمل الحفظ
+  useEffect(() => {
+    const errors = globalForm.formState.errors;
+    if (Object.keys(errors).length > 0) {
+      console.log("Global Form Errors:", errors);
+    }
+  }, [globalForm.formState.errors]);
+
   const onSMTPSubmit = async (values: z.infer<typeof SMTPConfigSchema>) => {
     const res = await updateSMTPConfig(values);
     if (res.success) toast.success("تم تحديث إعدادات SMTP بنجاح");
@@ -83,11 +92,13 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
                 <CardContent className="px-0 pb-0 space-y-4">
                   <div className="space-y-2">
                     <Label>اسم الموقع (عربي)</Label>
-                    <Input {...globalForm.register("siteNameAr")} className="h-12 rounded-xl" />
+                    <Input {...globalForm.register("siteNameAr")} className={`h-12 rounded-xl ${globalForm.formState.errors.siteNameAr ? 'border-red-500' : ''}`} />
+                    {globalForm.formState.errors.siteNameAr && <p className="text-red-500 text-xs">{globalForm.formState.errors.siteNameAr.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label>Site Name (English)</Label>
-                    <Input {...globalForm.register("siteNameEn")} dir="ltr" className="h-12 rounded-xl font-sans" />
+                    <Input {...globalForm.register("siteNameEn")} dir="ltr" className={`h-12 rounded-xl font-sans ${globalForm.formState.errors.siteNameEn ? 'border-red-500' : ''}`} />
+                    {globalForm.formState.errors.siteNameEn && <p className="text-red-500 text-xs">{globalForm.formState.errors.siteNameEn.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <ImageUpload
@@ -135,7 +146,8 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label>العنوان الرئيسي (عربي)</Label>
-                            <Input {...globalForm.register("heroTitleAr")} className="h-12 rounded-xl" />
+                            <Input {...globalForm.register("heroTitleAr")} className={`h-12 rounded-xl ${globalForm.formState.errors.heroTitleAr ? 'border-red-500' : ''}`} />
+                            {globalForm.formState.errors.heroTitleAr && <p className="text-red-500 text-xs">{globalForm.formState.errors.heroTitleAr.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label>العنوان الفرعي (عربي)</Label>
@@ -145,7 +157,8 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label>Hero Main Title (English)</Label>
-                            <Input {...globalForm.register("heroTitleEn")} dir="ltr" className="h-12 rounded-xl font-sans" />
+                            <Input {...globalForm.register("heroTitleEn")} dir="ltr" className={`h-12 rounded-xl font-sans ${globalForm.formState.errors.heroTitleEn ? 'border-red-500' : ''}`} />
+                            {globalForm.formState.errors.heroTitleEn && <p className="text-red-500 text-xs">{globalForm.formState.errors.heroTitleEn.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label>Hero Subtitle (English)</Label>
@@ -163,7 +176,8 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
                     <CardContent className="px-0 pb-0 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>البريد الإلكتروني</Label>
-                            <Input {...globalForm.register("contactEmail")} dir="ltr" className="h-12 rounded-xl font-sans" />
+                            <Input {...globalForm.register("contactEmail")} dir="ltr" className={`h-12 rounded-xl font-sans ${globalForm.formState.errors.contactEmail ? 'border-red-500' : ''}`} />
+                            {globalForm.formState.errors.contactEmail && <p className="text-red-500 text-xs">{globalForm.formState.errors.contactEmail.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label>رقم الهاتف</Label>
@@ -200,15 +214,14 @@ export default function SettingsForm({ globalSettings, smtpConfig }: SettingsFor
              </div>
           </TabsContent>
 
-          <TabsContent value="general" className="!mt-8 flex justify-end">
+          <div className="!mt-8 flex justify-end gap-3 sticky bottom-0 bg-slate-50/80 backdrop-blur-md p-4 rounded-2xl border border-white/20 z-10">
+             {Object.keys(globalForm.formState.errors).length > 0 && (
+               <p className="text-red-500 text-sm flex items-center gap-2 px-4 font-bold animate-pulse">
+                 يرجى تصحيح الأخطاء في الحقول المميزة باللون الأحمر
+               </p>
+             )}
              <SubmitButton loading={globalForm.formState.isSubmitting} />
-          </TabsContent>
-          <TabsContent value="hero" className="!mt-8 flex justify-end">
-             <SubmitButton loading={globalForm.formState.isSubmitting} />
-          </TabsContent>
-          <TabsContent value="footer" className="!mt-8 flex justify-end">
-             <SubmitButton loading={globalForm.formState.isSubmitting} />
-          </TabsContent>
+          </div>
         </form>
 
         <TabsContent value="smtp">
