@@ -7,12 +7,24 @@ import { GraduationCap, Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function Footer({ settings }: { settings?: any }) {
+import { type SiteSettings } from "@/lib/settings-schema";
+
+export default function Footer({ settings }: { settings?: any | SiteSettings }) {
   const t = useTranslations("Navigation");
   const locale = useLocale();
   const isRtl = locale === "ar";
 
-  const siteName = isRtl ? (settings?.siteNameAr || "مدارس تاج النزهة") : (settings?.siteNameEn || "TAJ SCHOOLS");
+  // Handle both legacy and new settings engine structures
+  const siteName = isRtl
+    ? (settings?.general?.siteNameAr || settings?.siteNameAr || "مدارس تاج النزهة")
+    : (settings?.general?.siteNameEn || settings?.siteNameEn || "TAJ SCHOOLS");
+
+  const contact = {
+    addressAr: settings?.contact?.addressAr || settings?.contactAddressAr,
+    addressEn: settings?.contact?.addressEn || settings?.contactAddressEn,
+    phone: settings?.contact?.phone || settings?.contactPhone,
+    email: settings?.contact?.email || settings?.contactEmail,
+  };
 
   return (
     <footer className="bg-deep-navy text-gray-400 pt-32 pb-12 overflow-hidden relative" dir={isRtl ? "rtl" : "ltr"}>
@@ -94,7 +106,7 @@ export default function Footer({ settings }: { settings?: any }) {
               <Link href="#" className="flex items-start gap-4 p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all group">
                 <MapPin className="w-6 h-6 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-bold leading-relaxed text-gray-400 group-hover:text-gray-200 transition-colors">
-                    {isRtl ? (settings?.contactAddressAr || "القاهرة، النزهة الجديدة، شارع النصر، مبنى مدرسة تاج النزهة") : (settings?.contactAddressEn || "Al-Nasr St., New Nozha, Cairo, Taj Schools Campus")}
+                    {isRtl ? (contact.addressAr || "القاهرة، النزهة الجديدة، شارع النصر، مبنى مدرسة تاج النزهة") : (contact.addressEn || "Al-Nasr St., New Nozha, Cairo, Taj Schools Campus")}
                 </span>
               </Link>
               <div className="flex items-center gap-4 px-2">
@@ -103,7 +115,7 @@ export default function Footer({ settings }: { settings?: any }) {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{isRtl ? "رقم الهاتف" : "Phone"}</span>
-                    <span className="text-sm font-bold font-sans text-gray-200" dir="ltr">{settings?.contactPhone || "+20 123 456 7890"}</span>
+                    <span className="text-sm font-bold font-sans text-gray-200" dir="ltr">{contact.phone || "+20 123 456 7890"}</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 px-2">
@@ -112,7 +124,7 @@ export default function Footer({ settings }: { settings?: any }) {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{isRtl ? "البريد الإلكتروني" : "Email"}</span>
-                    <span className="text-sm font-bold text-gray-200">{settings?.contactEmail || "info@taj-schools.com"}</span>
+                    <span className="text-sm font-bold text-gray-200">{contact.email || "info@taj-schools.com"}</span>
                 </div>
               </div>
             </div>

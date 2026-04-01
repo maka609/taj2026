@@ -1,4 +1,5 @@
 import { getGlobalSettings, getSMTPConfig } from "@/actions/settings";
+import { getSettings } from "@/actions/settings-engine";
 import SettingsForm from "@/components/admin/settings/SettingsForm";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,9 +9,10 @@ export const metadata = {
 };
 
 export default async function AdminSettingsPage() {
-  const [globalRes, smtpRes] = await Promise.all([
+  const [globalRes, smtpRes, settings] = await Promise.all([
     getGlobalSettings(),
-    getSMTPConfig()
+    getSMTPConfig(),
+    getSettings()
   ]);
 
   return (
@@ -19,6 +21,7 @@ export default async function AdminSettingsPage() {
         <SettingsForm
             globalSettings={globalRes.data}
             smtpConfig={smtpRes.data}
+            settings={settings}
         />
       </Suspense>
     </div>

@@ -217,8 +217,10 @@ model Message {
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String   @db.Text
+  value     Json
   updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
 }
 
 model GlobalSettings {

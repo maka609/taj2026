@@ -2,7 +2,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getGlobalSettings } from "@/actions/settings";
+import { getSettings } from "@/actions/settings-engine";
+import { getOptimizedImage } from "@/lib/utils";
 import React from "react";
 
 export default async function LocaleLayout({
@@ -16,7 +17,24 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const direction = locale === 'ar' ? 'rtl' : 'ltr';
 
-  const { data: settings } = await getGlobalSettings();
+  const settings = await getSettings();
+  const optimizedLogo = getOptimizedImage(settings?.general?.logoUrl, { width: 200, height: 200 });
+
+  // JSON-LD for Schema.org SEO
+  const jsonLd = settings?.seo?.schema || {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": settings?.general?.siteNameEn || "Taj Schools",
+    "alternateName": settings?.general?.siteNameAr || "مدارس تاج النزهة",
+    "url": "https://taj-schools.com",
+    "logo": optimizedLogo,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": settings?.contact?.phone,
+      "contactType": "customer service",
+      "email": settings?.contact?.email
+    }
+  };
 
   return (
     <div
@@ -24,11 +42,18 @@ export default async function LocaleLayout({
       dir={direction}
       className="min-h-screen flex flex-col overflow-x-hidden selection:bg-primary/20"
       style={{
-        // Dynamic colors from database
-        "--primary": settings?.primaryColor || "#7c3aed",
-        "--secondary": settings?.secondaryColor || "#ea580c",
+        // Dynamic colors from database using settings engine
+        "--primary": settings?.general?.primaryColor || "#7c3aed",
+        "--secondary": settings?.general?.secondaryColor || "#ea580c",
       } as React.CSSProperties}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {settings?.general?.gpcEnabled && (
+        <meta name="GPC" content="true" />
+      )}
       <NextIntlClientProvider messages={messages}>
         <Navbar />
         <main className="flex-1 w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-32">
