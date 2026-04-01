@@ -214,13 +214,11 @@ model Message {
   createdAt DateTime @default(now())
 }
 
-model SiteSetting {
+model SiteSettings {
   id        String   @id @default(cuid())
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
-
-  @@map("site_settings")
 }
 
 

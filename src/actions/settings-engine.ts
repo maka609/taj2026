@@ -43,7 +43,7 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
   };
 
   try {
-    const allSettings = await prisma.siteSetting.findMany();
+    const allSettings = await prisma.siteSettings.findMany();
     const settings = { ...defaultSettings };
 
     allSettings.forEach((s) => {
@@ -79,7 +79,7 @@ export async function updateSettingAction(key: keyof SiteSettings, value: any) {
 
     const validated = sectionSchema.parse(value);
 
-    await prisma.siteSetting.upsert({
+    await prisma.siteSettings.upsert({
       where: { key },
       update: { value: validated },
       create: { key, value: validated },
