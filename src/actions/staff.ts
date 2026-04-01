@@ -63,11 +63,12 @@ export async function deleteStaff(id: string) {
     // جلب بيانات العضو أولاً
     const staff = await prisma.staff.findUnique({ where: { id } })
     
-    if (staff && staff.imageUrl) {
-      // استخراج اسم الملف من الرابط
-      const urlParts = staff.imageUrl.split('/')
-      const fileName = urlParts[urlParts.length - 1]
+    if (staff && staff.imageUrl && staff.imageUrl.includes('supabase.co')) {
+      // استخراج اسم الملف من الرابط (الرابط النظيف ينتهي باسم الملف)
+      const fileName = staff.imageUrl.split('/').pop()?.split('?')[0]
       
+      if (!fileName) return { success: false, error: 'تعذر تحديد ملف الصورة' }
+
       // حذف الصورة من Supabase Storage
       const { supabase } = await import('@/lib/supabase')
       const { error: storageError } = await supabase.storage
