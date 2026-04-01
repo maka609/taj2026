@@ -1,7 +1,8 @@
 import { supabase } from './supabase'
+import { uploadImageLocal, isSupabaseConfigured } from './upload-local'
 
 /**
- * رفع صورة إلى Supabase Storage
+ * رفع صورة إلى Supabase Storage مع fallback للـ Base64 في حالة عدم الإعداد
  * @param file - ملف الصورة
  * @param bucket - اسم الـ bucket (مثل: 'sliders', 'news', 'gallery')
  * @returns رابط الصورة المرفوعة
@@ -19,6 +20,12 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
       throw new Error('حجم الصورة يجب أن يكون أقل من 5 ميجابايت')
     }
 
+    // إذا كان Supabase غير مهيأ، نستخدم الرفع المحلي (Base64)
+    if (!isSupabaseConfigured() || !supabase) {
+      console.warn('Supabase not configured, falling back to local Base64 upload');
+      return await uploadImageLocal(file);
+    }
+
     // إنشاء اسم فريد للملف
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
@@ -33,7 +40,13 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
 
     if (error) {
       console.error('Supabase upload error:', error)
-      throw new Error('فشل في رفع الصورة')
+
+      // إذا كان الخطأ متعلق بالـ bucket غير موجود، نوضح ذلك
+      if (error.message.includes('bucket not found')) {
+        throw new Error(`Bucket "${bucket}" غير موجود في Supabase. يرجى إنشاؤه أولاً.`)
+      }
+
+      throw new Error(`فشل في الرفع: ${error.message}`)
     }
 
     // الحصول على الرابط العام
@@ -42,7 +55,7 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
       .getPublicUrl(fileName)
 
     return urlData.publicUrl
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error)
     throw error
   }
@@ -69,6 +82,60 @@ export async function deleteImage(url: string, bucket: string): Promise<void> {
     }
   } catch (error) {
     console.error('Delete error:', error)
+    throw error
+  }
+}
+
+/**
+ * رفع ملف (PDF, Doc, إلخ) إلى Supabase Storage مع fallback للـ Base64
+ * @param file - الملف
+ * @param bucket - اسم الـ bucket (مثل: 'documents')
+ * @returns كائن يحتوي على الرابط والحجم
+ */
+export async function uploadFile(
+  file: File,
+  bucket: string
+): Promise<{ url: string; size: number }> {
+  try {
+    // التحقق من حجم الملف (10MB max)
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    if (file.size > maxSize) {
+      throw new Error('حجم الملف يجب أن يكون أقل من 10 ميجابايت')
+    }
+
+    // إذا كان Supabase غير مهيأ، نستخدم الرفع المحلي
+    if (!isSupabaseConfigured() || !supabase) {
+      const { uploadFileLocal } = await import('./upload-local');
+      return await uploadFileLocal(file);
+    }
+
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (error) {
+      if (error.message.includes('bucket not found')) {
+        throw new Error(`Bucket "${bucket}" غير موجود في Supabase. يرجى إنشاؤه أولاً.`)
+      }
+      throw new Error(`فشل في رفع الملف: ${error.message}`)
+    }
+
+    const { data: urlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName)
+
+    return {
+      url: urlData.publicUrl,
+      size: file.size
+    }
+  } catch (error: any) {
+    console.error('File Upload error:', error)
     throw error
   }
 }

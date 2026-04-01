@@ -40,9 +40,13 @@ export default function ImageUpload({
     try {
       const url = await uploadImage(file, bucket);
       onUploadComplete(url);
+      setError(null);
     } catch (err: any) {
+      console.error('Upload Error:', err);
       setError(err.message || 'فشل في رفع الصورة');
-      setPreview(currentImage || null);
+      // لا نحذف المعاينة حتى يرى المستخدم ماذا كان يحاول رفعه،
+      // ولكن نعيد الحالة الأصلية إذا كان هناك خطأ حرج
+      if (!preview) setPreview(currentImage || null);
     } finally {
       setUploading(false);
     }

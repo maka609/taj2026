@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload, X, FileText } from 'lucide-react';
+import { uploadFile } from '@/lib/upload';
 
 interface FileUploadProps {
   bucket: string;
@@ -45,28 +46,11 @@ export default function FileUpload({
     setError(null);
 
     try {
-      // هنا يجب استخدام uploadFile بدلاً من uploadImage
-      // لكن حالياً هنستخدم نفس الدالة مع تعديل بسيط
-      const { supabase } = await import('@/lib/supabase');
-      
-      const fileExt = file.name.split('.').pop();
-      const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-      const { data, error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(uniqueFileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(uniqueFileName);
-
-      onUploadComplete(urlData.publicUrl, file.name, file.size);
+      const { url, size } = await uploadFile(file, bucket);
+      onUploadComplete(url, file.name, size);
+      setError(null);
     } catch (err: any) {
+      console.error('File Upload Error:', err);
       setError(err.message || 'فشل في رفع الملف');
       setFileName(currentFile || null);
     } finally {
