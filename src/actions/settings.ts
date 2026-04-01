@@ -73,7 +73,7 @@ export async function updateSMTPConfig(data: z.infer<typeof SMTPConfigSchema>) {
 export async function updateSettings(data: Record<string, string>) {
   try {
     for (const [key, value] of Object.entries(data)) {
-      await prisma.siteSetting.upsert({
+      await prisma.siteSettings.upsert({
         where: { key },
         update: { value },
         create: { key, value }
