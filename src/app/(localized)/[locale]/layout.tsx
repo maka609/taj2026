@@ -48,7 +48,7 @@ export default async function LocaleLayout({
         "--secondary": settings?.general?.secondaryColor || "#ea580c",
         // Additional requested variables
         "--primary-color": settings?.general?.primaryColor || "#7c3aed",
-        "--school-name": isRtl ? settings?.general?.siteNameAr : settings?.general?.siteNameEn
+        "--school-name": locale === 'ar' ? settings?.general?.siteNameAr : settings?.general?.siteNameEn
       } as React.CSSProperties}
     >
       <script
