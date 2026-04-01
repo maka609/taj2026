@@ -9,7 +9,7 @@ const newsSchema = z.object({
   titleEn: z.string().min(5),
   contentAr: z.string().min(10),
   contentEn: z.string().min(10),
-  imageUrl: z.string().url().or(z.literal("")).optional().nullable(),
+  imageUrl: z.string().min(1).or(z.literal("")).optional().nullable(),
 });
 
 type NewsInput = z.infer<typeof newsSchema>;

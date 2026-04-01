@@ -10,7 +10,7 @@ const staffSchema = z.object({
   roleAr: z.string().min(2),
   roleEn: z.string().min(2),
   department: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().min(1).optional(),
   order: z.number().int().default(0),
 })
 

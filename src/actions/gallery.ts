@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 const gallerySchema = z.object({
-  url: z.string().url(),
+  url: z.string().min(1),
   captionAr: z.string().optional().nullable(),
   captionEn: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
