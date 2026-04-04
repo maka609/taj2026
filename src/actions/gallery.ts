@@ -26,10 +26,20 @@ export async function getGalleryImages() {
 export async function createGalleryImage(data: z.infer<typeof gallerySchema>) {
     try {
       const validated = gallerySchema.parse(data)
-      const image = await prisma.galleryImage.create({ data: validated })
+      const image = await prisma.galleryImage.create({
+        data: {
+          url: validated.url,
+          captionAr: validated.captionAr,
+          captionEn: validated.captionEn,
+          category: validated.category,
+        }
+      })
       revalidatePath('/admin/gallery')
       return { success: true, data: image }
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return { success: false, error: error.errors[0].message }
+      }
       console.error('Error creating gallery image:', error)
       return { success: false, error: 'فشل في الإضافة' }
     }

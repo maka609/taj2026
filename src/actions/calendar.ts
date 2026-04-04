@@ -32,7 +32,10 @@ export async function createEvent(data: EventInput) {
     const validated = eventSchema.parse(data)
     const event = await prisma.event.create({
       data: {
-        ...validated,
+        titleAr: validated.titleAr,
+        titleEn: validated.titleEn,
+        description: validated.description,
+        color: validated.color,
         startDate: new Date(validated.startDate),
         endDate: validated.endDate ? new Date(validated.endDate) : null,
       }
@@ -40,6 +43,9 @@ export async function createEvent(data: EventInput) {
     revalidatePath('/admin/calendar')
     return { success: true, data: event }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error creating event:', error)
     return { success: false, error: 'فشل في الإضافة' }
   }
@@ -47,17 +53,21 @@ export async function createEvent(data: EventInput) {
 
 export async function updateEvent(id: string, data: Partial<EventInput>) {
     try {
+      const validated = eventSchema.partial().parse(data)
       const event = await prisma.event.update({
         where: { id },
         data: {
-          ...data,
-          startDate: data.startDate ? new Date(data.startDate) : undefined,
-          endDate: data.endDate ? new Date(data.endDate) : (data.endDate === null ? null : undefined),
+          ...validated,
+          startDate: validated.startDate ? new Date(validated.startDate) : undefined,
+          endDate: validated.endDate ? new Date(validated.endDate) : (validated.endDate === null ? null : undefined),
         }
       })
       revalidatePath('/admin/calendar')
       return { success: true, data: event }
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return { success: false, error: error.errors[0].message }
+      }
       console.error('Error updating event:', error)
       return { success: false, error: 'فشل في التحديث' }
     }

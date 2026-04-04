@@ -27,10 +27,21 @@ export async function getFAQs() {
 export async function createFAQ(data: z.infer<typeof faqSchema>) {
   try {
     const validated = faqSchema.parse(data)
-    const faq = await prisma.fAQ.create({ data: validated })
+    const faq = await prisma.fAQ.create({
+      data: {
+        questionAr: validated.questionAr,
+        questionEn: validated.questionEn,
+        answerAr: validated.answerAr,
+        answerEn: validated.answerEn,
+        order: validated.order,
+      }
+    })
     revalidatePath('/admin/faq')
     return { success: true, data: faq }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error creating FAQ:', error)
     return { success: false, error: 'فشل في الإضافة' }
   }
@@ -38,10 +49,17 @@ export async function createFAQ(data: z.infer<typeof faqSchema>) {
 
 export async function updateFAQ(id: string, data: Partial<z.infer<typeof faqSchema>>) {
   try {
-    const faq = await prisma.fAQ.update({ where: { id }, data })
+    const validated = faqSchema.partial().parse(data)
+    const faq = await prisma.fAQ.update({
+      where: { id },
+      data: validated
+    })
     revalidatePath('/admin/faq')
     return { success: true, data: faq }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error updating FAQ:', error)
     return { success: false, error: 'فشل في التحديث' }
   }

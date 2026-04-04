@@ -50,3 +50,26 @@ export async function deleteTestimonial(id: string) {
     return { success: false, error: 'فشل في الحذف' }
   }
 }
+
+export async function submitTestimonial(data: z.infer<typeof testimonialSchema>) {
+  try {
+    const validated = testimonialSchema.parse(data)
+    const testimonial = await prisma.testimonial.create({
+      data: {
+        parentName: validated.parentName,
+        contentAr: validated.contentAr,
+        contentEn: validated.contentEn,
+        rating: validated.rating,
+        approved: false, // Always default to false for public submissions
+      }
+    })
+    revalidatePath('/admin/testimonials')
+    return { success: true, data: testimonial }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
+    console.error('Error submitting testimonial:', error)
+    return { success: false, error: 'فشل في إرسال التقييم' }
+  }
+}

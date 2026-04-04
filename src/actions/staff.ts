@@ -32,12 +32,23 @@ export async function createStaff(data: z.infer<typeof staffSchema>) {
     const validated = staffSchema.parse(data)
     
     const staff = await prisma.staff.create({
-      data: validated
+      data: {
+        nameAr: validated.nameAr,
+        nameEn: validated.nameEn,
+        roleAr: validated.roleAr,
+        roleEn: validated.roleEn,
+        department: validated.department,
+        imageUrl: validated.imageUrl,
+        order: validated.order,
+      }
     })
     
     revalidatePath('/admin/staff')
     return { success: true, data: staff }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error creating staff:', error)
     return { success: false, error: 'فشل في الإضافة' }
   }
@@ -45,14 +56,19 @@ export async function createStaff(data: z.infer<typeof staffSchema>) {
 
 export async function updateStaff(id: string, data: Partial<z.infer<typeof staffSchema>>) {
   try {
+    const validated = staffSchema.partial().parse(data)
+
     const staff = await prisma.staff.update({
       where: { id },
-      data
+      data: validated
     })
     
     revalidatePath('/admin/staff')
     return { success: true, data: staff }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error updating staff:', error)
     return { success: false, error: 'فشل في التحديث' }
   }

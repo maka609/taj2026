@@ -70,9 +70,13 @@ export async function updateSMTPConfig(data: z.infer<typeof SMTPConfigSchema>) {
 }
 
 // Keep legacy for compatibility if needed, but update to revalidate more broadly
+const settingsMapSchema = z.record(z.string(), z.string());
+
 export async function updateSettings(data: Record<string, string>) {
   try {
-    for (const [key, value] of Object.entries(data)) {
+    const validated = settingsMapSchema.parse(data);
+
+    for (const [key, value] of Object.entries(validated)) {
       await prisma.siteSetting.upsert({
         where: { key },
         update: { value },
@@ -84,6 +88,9 @@ export async function updateSettings(data: Record<string, string>) {
     revalidatePath("/admin/settings");
     return { success: true };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message };
+    }
     return { success: false, error: "فشل في حفظ الإعدادات" };
   }
 }

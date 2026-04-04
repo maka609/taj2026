@@ -27,10 +27,21 @@ export async function getDocuments() {
 export async function createDocument(data: z.infer<typeof documentSchema>) {
   try {
     const validated = documentSchema.parse(data)
-    const document = await prisma.document.create({ data: validated })
+    const document = await prisma.document.create({
+      data: {
+        titleAr: validated.titleAr,
+        titleEn: validated.titleEn,
+        fileUrl: validated.fileUrl,
+        category: validated.category,
+        fileSize: validated.fileSize,
+      }
+    })
     revalidatePath('/admin/downloads')
     return { success: true, data: document }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error creating document:', error)
     return { success: false, error: 'فشل في الإضافة' }
   }
@@ -38,13 +49,17 @@ export async function createDocument(data: z.infer<typeof documentSchema>) {
 
 export async function updateDocument(id: string, data: Partial<z.infer<typeof documentSchema>>) {
     try {
+      const validated = documentSchema.partial().parse(data)
       const document = await prisma.document.update({
         where: { id },
-        data
+        data: validated
       })
       revalidatePath('/admin/downloads')
       return { success: true, data: document }
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return { success: false, error: error.errors[0].message }
+      }
       console.error('Error updating document:', error)
       return { success: false, error: 'فشل في التحديث' }
     }

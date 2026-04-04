@@ -2,6 +2,15 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const messageSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  subject: z.string().min(5),
+  message: z.string().min(10),
+  phone: z.string().optional().nullable(),
+})
 
 export async function getMessages(filter?: 'all' | 'read' | 'unread') {
   try {
@@ -48,21 +57,25 @@ export async function deleteMessage(id: string) {
   }
 }
 
-export async function sendMessage(data: { name: string, email: string, subject: string, message: string }) {
+export async function sendMessage(data: z.infer<typeof messageSchema>) {
   try {
+    const validated = messageSchema.parse(data)
     const newMessage = await prisma.message.create({
       data: {
-        name: data.name,
-        email: data.email,
-        subject: data.subject,
-        message: data.message,
-        phone: "",
+        name: validated.name,
+        email: validated.email,
+        subject: validated.subject,
+        message: validated.message,
+        phone: validated.phone || "",
       }
     });
 
     revalidatePath('/admin/messages');
     return { success: true, data: newMessage };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     console.error('Error sending message:', error);
     return { success: false, error: 'فشل في إرسال الرسالة' };
   }

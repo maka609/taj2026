@@ -37,6 +37,31 @@ export async function createCareer(data: CareerInput) {
     const validated = careerSchema.parse(data);
     const career = await prisma.career.create({
       data: {
+          titleAr: validated.titleAr,
+          titleEn: validated.titleEn,
+          descriptionAr: validated.descriptionAr,
+          descriptionEn: validated.descriptionEn,
+          department: validated.department,
+          active: validated.active,
+          deadline: validated.deadline ? new Date(validated.deadline) : null,
+      }
+    });
+    revalidatePath("/admin/careers");
+    return { success: true, data: career };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
+    return { success: false, error: "فشل في إضافة الوظيفة" };
+  }
+}
+
+export async function updateCareer(id: string, data: Partial<CareerInput>) {
+  try {
+    const validated = careerSchema.partial().parse(data);
+    const career = await prisma.career.update({
+      where: { id },
+      data: {
           ...validated,
           deadline: validated.deadline ? new Date(validated.deadline) : null,
       }
@@ -44,22 +69,9 @@ export async function createCareer(data: CareerInput) {
     revalidatePath("/admin/careers");
     return { success: true, data: career };
   } catch (error) {
-    return { success: false, error: "فشل في إضافة الوظيفة" };
-  }
-}
-
-export async function updateCareer(id: string, data: Partial<CareerInput>) {
-  try {
-    const career = await prisma.career.update({
-      where: { id },
-      data: {
-          ...data,
-          deadline: data.deadline ? new Date(data.deadline) : null,
-      }
-    });
-    revalidatePath("/admin/careers");
-    return { success: true, data: career };
-  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0].message }
+    }
     return { success: false, error: "فشل في تحديث الوظيفة" };
   }
 }
