@@ -6,8 +6,8 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🔄 Creating admin user...')
 
-  // تشفير كلمة المرور
-  const hashedPassword = await bcrypt.hash('admin123', 10)
+  // تشفير كلمة المرور (bcrypt cost = 12)
+  const hashedPassword = await bcrypt.hash('admin123', 12)
 
   // إنشاء المستخدم
   const admin = await prisma.user.upsert({

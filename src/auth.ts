@@ -7,7 +7,21 @@ import { z } from "zod";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 60, // 30 minutes
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   pages: {
     signIn: "/portal/login", // Generic login page
   },
@@ -38,19 +52,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: any) {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    async jwt({ token, user }: { token: any, user: any }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: any, token: any }) {
       if (token && session.user) {
         session.user.role = token.role;
         session.user.id = token.id;
       }
       return session;
     },
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   },
 });
