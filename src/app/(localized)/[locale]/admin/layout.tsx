@@ -1,5 +1,6 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { ErrorBoundary } from "@/components/admin/ui/ErrorBoundary";
+import { SecurityProvider } from "@/components/common/SecurityProvider";
 
 export default function AdminLayout({
   children,
@@ -7,6 +8,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
+    <SecurityProvider>
     <div className="flex min-h-screen bg-[#fcfcfd] overflow-hidden selection:bg-primary/10 selection:text-primary" dir="rtl">
       {/* Sidebar - fixed on large screens */}
       <div className="hidden lg:block w-72 flex-shrink-0 border-l border-gray-100 bg-white shadow-xl shadow-gray-200/50">
@@ -26,5 +28,6 @@ export default function AdminLayout({
         </div>
       </main>
     </div>
+    </SecurityProvider>
   );
 }
