@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const testimonialSchema = z.object({
   parentName: z.string().min(3),
@@ -21,8 +22,7 @@ export async function getTestimonials(filter?: 'all' | 'approved' | 'pending') {
     })
     return { success: true, data: testimonials }
   } catch (error) {
-    console.error('Error fetching testimonials:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -35,8 +35,7 @@ export async function updateTestimonialStatus(id: string, approved: boolean) {
     revalidatePath('/admin/testimonials')
     return { success: true }
   } catch (error) {
-    console.error('Error updating testimonial status:', error)
-    return { success: false, error: 'فشل في تحديث الحالة' }
+    return handleActionError(error, 'فشل في تحديث الحالة')
   }
 }
 
@@ -46,7 +45,25 @@ export async function deleteTestimonial(id: string) {
     revalidatePath('/admin/testimonials')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting testimonial:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
+  }
+}
+
+export async function submitTestimonial(data: z.infer<typeof testimonialSchema>) {
+  try {
+    const validated = testimonialSchema.parse(data)
+    const testimonial = await prisma.testimonial.create({
+      data: {
+        parentName: validated.parentName,
+        contentAr: validated.contentAr,
+        contentEn: validated.contentEn,
+        rating: validated.rating,
+        approved: false, // Always default to false for public submissions
+      }
+    })
+    revalidatePath('/admin/testimonials')
+    return { success: true, data: testimonial }
+  } catch (error) {
+    return handleActionError(error, 'فشل في إرسال التقييم')
   }
 }

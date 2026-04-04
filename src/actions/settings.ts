@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { GlobalSettingsSchema, SMTPConfigSchema } from "@/lib/schemas";
+import { handleActionError } from "@/lib/error-handler";
 
 // Actions
 export async function getGlobalSettings() {
@@ -13,7 +14,7 @@ export async function getGlobalSettings() {
     });
     return { success: true, data: settings };
   } catch (error) {
-    return { success: false, error: "فشل في جلب الإعدادات العالمية" };
+    return handleActionError(error, "فشل في جلب الإعدادات العالمية");
   }
 }
 
@@ -31,10 +32,7 @@ export async function updateGlobalSettings(data: z.infer<typeof GlobalSettingsSc
     revalidatePath("/admin/settings");
     return { success: true };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-        return { success: false, error: error.issues[0].message };
-    }
-    return { success: false, error: "فشل في تحديث الإعدادات العالمية" };
+    return handleActionError(error, "فشل في تحديث الإعدادات العالمية");
   }
 }
 
@@ -45,7 +43,7 @@ export async function getSMTPConfig() {
     });
     return { success: true, data: config };
   } catch (error) {
-    return { success: false, error: "فشل في جلب إعدادات SMTP" };
+    return handleActionError(error, "فشل في جلب إعدادات SMTP");
   }
 }
 
@@ -62,17 +60,18 @@ export async function updateSMTPConfig(data: z.infer<typeof SMTPConfigSchema>) {
     revalidatePath("/admin/settings");
     return { success: true };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-        return { success: false, error: error.issues[0].message };
-    }
-    return { success: false, error: "فشل في تحديث إعدادات SMTP" };
+    return handleActionError(error, "فشل في تحديث إعدادات SMTP");
   }
 }
 
 // Keep legacy for compatibility if needed, but update to revalidate more broadly
+const settingsMapSchema = z.record(z.string(), z.string());
+
 export async function updateSettings(data: Record<string, string>) {
   try {
-    for (const [key, value] of Object.entries(data)) {
+    const validated = settingsMapSchema.parse(data);
+
+    for (const [key, value] of Object.entries(validated)) {
       await prisma.siteSetting.upsert({
         where: { key },
         update: { value },
@@ -84,6 +83,6 @@ export async function updateSettings(data: Record<string, string>) {
     revalidatePath("/admin/settings");
     return { success: true };
   } catch (error) {
-    return { success: false, error: "فشل في حفظ الإعدادات" };
+    return handleActionError(error, "فشل في حفظ الإعدادات");
   }
 }

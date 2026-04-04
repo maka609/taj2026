@@ -2,6 +2,16 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
+
+const messageSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  subject: z.string().min(5),
+  message: z.string().min(10),
+  phone: z.string().optional().nullable(),
+})
 
 export async function getMessages(filter?: 'all' | 'read' | 'unread') {
   try {
@@ -14,8 +24,7 @@ export async function getMessages(filter?: 'all' | 'read' | 'unread') {
     
     return { success: true, data: messages }
   } catch (error) {
-    console.error('Error fetching messages:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -29,8 +38,7 @@ export async function markAsRead(id: string) {
     revalidatePath('/admin/messages')
     return { success: true }
   } catch (error) {
-    console.error('Error marking message:', error)
-    return { success: false, error: 'فشل في التحديث' }
+    return handleActionError(error, 'فشل في التحديث')
   }
 }
 
@@ -43,27 +51,26 @@ export async function deleteMessage(id: string) {
     revalidatePath('/admin/messages')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting message:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }
 
-export async function sendMessage(data: { name: string, email: string, subject: string, message: string }) {
+export async function sendMessage(data: z.infer<typeof messageSchema>) {
   try {
+    const validated = messageSchema.parse(data)
     const newMessage = await prisma.message.create({
       data: {
-        name: data.name,
-        email: data.email,
-        subject: data.subject,
-        message: data.message,
-        phone: "",
+        name: validated.name,
+        email: validated.email,
+        subject: validated.subject,
+        message: validated.message,
+        phone: validated.phone || "",
       }
     });
 
     revalidatePath('/admin/messages');
     return { success: true, data: newMessage };
   } catch (error) {
-    console.error('Error sending message:', error);
-    return { success: false, error: 'فشل في إرسال الرسالة' };
+    return handleActionError(error, 'فشل في إرسال الرسالة');
   }
 }

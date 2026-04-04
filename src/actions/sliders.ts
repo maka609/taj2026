@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 // Schema للتحقق من البيانات
 const sliderSchema = z.object({
@@ -22,8 +23,7 @@ export async function getSliders() {
     })
     return { success: true, data: sliders }
   } catch (error) {
-    console.error('Error fetching sliders:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -33,7 +33,14 @@ export async function createSlider(data: z.infer<typeof sliderSchema>) {
     const validated = sliderSchema.parse(data)
     
     const slider = await prisma.slider.create({
-      data: validated as any
+      data: {
+        imageUrl: validated.imageUrl,
+        titleAr: validated.titleAr,
+        titleEn: validated.titleEn,
+        link: validated.link,
+        order: validated.order,
+        active: validated.active,
+      }
     })
     
     revalidatePath('/admin/sliders')
@@ -41,20 +48,17 @@ export async function createSlider(data: z.infer<typeof sliderSchema>) {
     
     return { success: true, data: slider }
   } catch (error) {
-    console.error('Error creating slider:', error)
-    if (error instanceof z.ZodError) {
-      return { success: false, error: `خطأ في البيانات: ${error.errors[0].message}` }
-    }
-    return { success: false, error: 'فشل في إضافة السلايدر' }
+    return handleActionError(error, 'فشل في إضافة السلايدر')
   }
 }
 
 // تحديث سلايدر
 export async function updateSlider(id: string, data: Partial<z.infer<typeof sliderSchema>>) {
   try {
+    const validated = sliderSchema.partial().parse(data)
     const slider = await prisma.slider.update({
       where: { id },
-      data: data as any
+      data: validated
     })
     
     revalidatePath('/admin/sliders')
@@ -62,8 +66,7 @@ export async function updateSlider(id: string, data: Partial<z.infer<typeof slid
     
     return { success: true, data: slider }
   } catch (error) {
-    console.error('Error updating slider:', error)
-    return { success: false, error: 'فشل في تحديث السلايدر' }
+    return handleActionError(error, 'فشل في تحديث السلايدر')
   }
 }
 
@@ -79,8 +82,7 @@ export async function deleteSlider(id: string) {
     
     return { success: true }
   } catch (error) {
-    console.error('Error deleting slider:', error)
-    return { success: false, error: 'فشل في حذف السلايدر' }
+    return handleActionError(error, 'فشل في حذف السلايدر')
   }
 }
 
@@ -97,7 +99,6 @@ export async function updateSliderStatus(id: string, active: boolean) {
 
       return { success: true }
     } catch (error) {
-      console.error('Error updating slider status:', error)
-      return { success: false, error: 'فشل في تحديث الحالة' }
+      return handleActionError(error, 'فشل في تحديث الحالة')
     }
 }

@@ -1,5 +1,7 @@
 import { supabase } from './supabase'
 import { uploadImageLocal, isSupabaseConfigured } from './upload-local'
+import { fileTypeFromBuffer } from 'file-type'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * رفع صورة إلى Supabase Storage مع fallback للـ Base64 في حالة عدم الإعداد
@@ -9,15 +11,19 @@ import { uploadImageLocal, isSupabaseConfigured } from './upload-local'
  */
 export async function uploadImage(file: File, bucket: string): Promise<string> {
   try {
-    // التحقق من نوع الملف
-    if (!file.type.startsWith('image/')) {
-      throw new Error('الملف يجب أن يكون صورة')
-    }
-
-    // التحقق من حجم الملف (5MB max)
+    // 1. Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      throw new Error('حجم الصورة يجب أن يكون أقل من 5 ميجابايت')
+      throw new Error('حجم الملف يجب أن يكون أقل من 5 ميجابايت')
+    }
+
+    // 2. Validate magic bytes using file-type
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const type = await fileTypeFromBuffer(buffer)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+
+    if (!type || !allowedTypes.includes(type.mime)) {
+      throw new Error('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPEG أو PNG أو WEBP.')
     }
 
     // إذا كان Supabase غير مهيأ، نستخدم الرفع المحلي (Base64)
@@ -26,9 +32,9 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
       return await uploadImageLocal(file);
     }
 
-    // إنشاء اسم فريد للملف
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    // 3. Rename file with UUID
+    const fileExt = type.ext
+    const fileName = `${uuidv4()}.${fileExt}`
 
     // رفع الملف
     const { data, error } = await supabase.storage
@@ -57,7 +63,7 @@ export async function uploadImage(file: File, bucket: string): Promise<string> {
     // لضمان الحصول على رابط نظيف بدون بارامترات إضافية (Cache buster) إذا لم تكن مطلوبة
     const cleanUrl = urlData.publicUrl.split('?')[0];
     return cleanUrl;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Upload error:', error)
     throw error
   }
@@ -99,10 +105,19 @@ export async function uploadFile(
   bucket: string
 ): Promise<{ url: string; size: number }> {
   try {
-    // التحقق من حجم الملف (10MB max)
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    // 1. Validate file size (5MB max as per requirement)
+    const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      throw new Error('حجم الملف يجب أن يكون أقل من 10 ميجابايت')
+      throw new Error('حجم الملف يجب أن يكون أقل من 5 ميجابايت')
+    }
+
+    // 2. Validate magic bytes using file-type
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const type = await fileTypeFromBuffer(buffer)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+
+    if (!type || !allowedTypes.includes(type.mime)) {
+      throw new Error('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPEG أو PNG أو WEBP.')
     }
 
     // إذا كان Supabase غير مهيأ، نستخدم الرفع المحلي
@@ -111,8 +126,9 @@ export async function uploadFile(
       return await uploadFileLocal(file);
     }
 
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    // 3. Rename file with UUID
+    const fileExt = type.ext
+    const fileName = `${uuidv4()}.${fileExt}`
 
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -138,7 +154,7 @@ export async function uploadFile(
       url: cleanUrl,
       size: file.size
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('File Upload error:', error)
     throw error
   }

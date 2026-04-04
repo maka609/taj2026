@@ -4,8 +4,11 @@ const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
+  poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10kb',
+    },
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -35,15 +38,19 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            value: 'no-referrer',
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains; preload',
+            value: 'max-age=31536000',
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.supabase.co; font-src 'self'; connect-src 'self' *.supabase.co; frame-ancestors 'none';",
+            value: "default-src 'self'; img-src 'self' data: blob: *.supabase.co; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; connect-src 'self' *.supabase.co;",
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=()',
           },
         ],
       },

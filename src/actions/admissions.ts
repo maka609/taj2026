@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { ApplicationStatus, Prisma } from '@prisma/client'
+import { handleActionError } from '@/lib/error-handler'
 
 const admissionSchema = z.object({
   studentNameAr: z.string().min(3, 'الاسم يجب أن يكون 3 أحرف على الأقل'),
@@ -30,8 +31,7 @@ export async function getAdmissions(status?: string) {
     
     return { success: true, data: admissions }
   } catch (error) {
-    console.error('Error fetching admissions:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -45,8 +45,7 @@ export async function updateAdmissionStatus(id: string, status: string) {
     revalidatePath('/admin/admissions')
     return { success: true }
   } catch (error) {
-    console.error('Error updating admission:', error)
-    return { success: false, error: 'فشل في تحديث الحالة' }
+    return handleActionError(error, 'فشل في تحديث الحالة')
   }
 }
 
@@ -59,8 +58,7 @@ export async function deleteAdmission(id: string) {
     revalidatePath('/admin/admissions')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting admission:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }
 
@@ -85,10 +83,6 @@ export async function submitAdmission(data: z.infer<typeof admissionSchema>) {
     revalidatePath('/admin/admissions');
     return { success: true, data: admission };
   } catch (error) {
-    console.error('Error submitting admission:', error);
-    if (error instanceof z.ZodError) {
-      return { success: false, error: "بيانات غير صالحة" };
-    }
-    return { success: false, error: 'فشل في إرسال الطلب' };
+    return handleActionError(error, 'فشل في إرسال الطلب');
   }
 }

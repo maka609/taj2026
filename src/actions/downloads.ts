@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const documentSchema = z.object({
   titleAr: z.string().min(3),
@@ -19,34 +20,40 @@ export async function getDocuments() {
     })
     return { success: true, data: documents }
   } catch (error) {
-    console.error('Error fetching documents:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
 export async function createDocument(data: z.infer<typeof documentSchema>) {
   try {
     const validated = documentSchema.parse(data)
-    const document = await prisma.document.create({ data: validated })
+    const document = await prisma.document.create({
+      data: {
+        titleAr: validated.titleAr,
+        titleEn: validated.titleEn,
+        fileUrl: validated.fileUrl,
+        category: validated.category,
+        fileSize: validated.fileSize,
+      }
+    })
     revalidatePath('/admin/downloads')
     return { success: true, data: document }
   } catch (error) {
-    console.error('Error creating document:', error)
-    return { success: false, error: 'فشل في الإضافة' }
+    return handleActionError(error, 'فشل في الإضافة')
   }
 }
 
 export async function updateDocument(id: string, data: Partial<z.infer<typeof documentSchema>>) {
     try {
+      const validated = documentSchema.partial().parse(data)
       const document = await prisma.document.update({
         where: { id },
-        data
+        data: validated
       })
       revalidatePath('/admin/downloads')
       return { success: true, data: document }
     } catch (error) {
-      console.error('Error updating document:', error)
-      return { success: false, error: 'فشل في التحديث' }
+      return handleActionError(error, 'فشل في التحديث')
     }
   }
 
@@ -77,7 +84,6 @@ export async function deleteDocument(id: string) {
     revalidatePath('/admin/downloads')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting document:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }

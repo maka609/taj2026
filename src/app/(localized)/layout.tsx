@@ -15,6 +15,12 @@ export default function LocalizedRootLayout({
 }>) {
   return (
     <html suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable}`}>
+      <head>
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; img-src 'self' data: blob: *.supabase.co; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; connect-src 'self' *.supabase.co;"
+        />
+      </head>
       <body suppressHydrationWarning>
         {children}
         <Toaster position="top-center" richColors />

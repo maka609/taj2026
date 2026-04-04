@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { handleActionError } from "@/lib/error-handler";
 
 export async function getSecurityLogs() {
   try {
@@ -16,7 +16,7 @@ export async function getSecurityLogs() {
     });
     return { success: true, data: logs };
   } catch (error) {
-    return { success: false, error: "فشل في جلب السجلات الأمنية" };
+    return handleActionError(error, "فشل في جلب السجلات الأمنية");
   }
 }
 
@@ -31,6 +31,6 @@ export async function createSecurityLog(action: string, details?: string, userId
         });
         return { success: true };
     } catch (error) {
-        return { success: false };
+        return handleActionError(error, "فشل في تسجيل الحركة الأمنية");
     }
 }

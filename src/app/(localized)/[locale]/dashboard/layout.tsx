@@ -2,6 +2,7 @@ import React from "react";
 import { useLocale } from "next-intl";
 import StudentSidebar from "@/components/dashboard/StudentSidebar";
 import StudentHeader from "@/components/dashboard/StudentHeader";
+import { SecurityProvider } from "@/components/common/SecurityProvider";
 
 export default function DashboardLayout({
   children,
@@ -12,6 +13,7 @@ export default function DashboardLayout({
   const isRtl = locale === "ar";
 
   return (
+    <SecurityProvider>
     <div className="flex min-h-screen bg-background relative z-[110]" dir={isRtl ? "rtl" : "ltr"}>
       {/* Student Sidebar */}
       <div className="hidden lg:block w-80 flex-shrink-0 bg-white border-x border-gray-100 shadow-xl shadow-gray-200/20">
@@ -30,5 +32,6 @@ export default function DashboardLayout({
         </main>
       </div>
     </div>
+    </SecurityProvider>
   );
 }

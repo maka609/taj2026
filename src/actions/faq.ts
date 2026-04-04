@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const faqSchema = z.object({
   questionAr: z.string().min(5),
@@ -19,31 +20,40 @@ export async function getFAQs() {
     })
     return { success: true, data: faqs }
   } catch (error) {
-    console.error('Error fetching FAQs:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
 export async function createFAQ(data: z.infer<typeof faqSchema>) {
   try {
     const validated = faqSchema.parse(data)
-    const faq = await prisma.fAQ.create({ data: validated })
+    const faq = await prisma.fAQ.create({
+      data: {
+        questionAr: validated.questionAr,
+        questionEn: validated.questionEn,
+        answerAr: validated.answerAr,
+        answerEn: validated.answerEn,
+        order: validated.order,
+      }
+    })
     revalidatePath('/admin/faq')
     return { success: true, data: faq }
   } catch (error) {
-    console.error('Error creating FAQ:', error)
-    return { success: false, error: 'فشل في الإضافة' }
+    return handleActionError(error, 'فشل في الإضافة')
   }
 }
 
 export async function updateFAQ(id: string, data: Partial<z.infer<typeof faqSchema>>) {
   try {
-    const faq = await prisma.fAQ.update({ where: { id }, data })
+    const validated = faqSchema.partial().parse(data)
+    const faq = await prisma.fAQ.update({
+      where: { id },
+      data: validated
+    })
     revalidatePath('/admin/faq')
     return { success: true, data: faq }
   } catch (error) {
-    console.error('Error updating FAQ:', error)
-    return { success: false, error: 'فشل في التحديث' }
+    return handleActionError(error, 'فشل في التحديث')
   }
 }
 
@@ -53,8 +63,7 @@ export async function updateFAQOrder(id: string, order: number) {
       revalidatePath('/admin/faq')
       return { success: true }
     } catch (error) {
-      console.error('Error updating FAQ order:', error)
-      return { success: false, error: 'فشل في تحديث الترتيب' }
+      return handleActionError(error, 'فشل في تحديث الترتيب')
     }
 }
 
@@ -64,7 +73,6 @@ export async function deleteFAQ(id: string) {
     revalidatePath('/admin/faq')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting FAQ:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }
