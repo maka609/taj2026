@@ -8,16 +8,10 @@
 
 export async function uploadImageLocal(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    // التحقق من نوع الملف
-    if (!file.type.startsWith('image/')) {
-      reject(new Error('الملف يجب أن يكون صورة'));
-      return;
-    }
-
-    // التحقق من حجم الملف (2MB max للـ Base64)
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    // 1. Validate file size (5MB max as per requirement)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      reject(new Error('حجم الصورة يجب أن يكون أقل من 2 ميجابايت'));
+      reject(new Error('حجم الملف يجب أن يكون أقل من 5 ميجابايت'));
       return;
     }
 
@@ -38,7 +32,7 @@ export async function uploadImageLocal(file: File): Promise<string> {
 
 export async function uploadFileLocal(file: File): Promise<{ url: string; size: number }> {
   return new Promise((resolve, reject) => {
-    // التحقق من حجم الملف (5MB max)
+    // 1. Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       reject(new Error('حجم الملف يجب أن يكون أقل من 5 ميجابايت'));
