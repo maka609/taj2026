@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const staffSchema = z.object({
   nameAr: z.string().min(3),
@@ -22,8 +23,7 @@ export async function getStaff() {
     
     return { success: true, data: staff }
   } catch (error) {
-    console.error('Error fetching staff:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -46,11 +46,7 @@ export async function createStaff(data: z.infer<typeof staffSchema>) {
     revalidatePath('/admin/staff')
     return { success: true, data: staff }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error creating staff:', error)
-    return { success: false, error: 'فشل في الإضافة' }
+    return handleActionError(error, 'فشل في الإضافة')
   }
 }
 
@@ -66,11 +62,7 @@ export async function updateStaff(id: string, data: Partial<z.infer<typeof staff
     revalidatePath('/admin/staff')
     return { success: true, data: staff }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error updating staff:', error)
-    return { success: false, error: 'فشل في التحديث' }
+    return handleActionError(error, 'فشل في التحديث')
   }
 }
 
@@ -102,7 +94,6 @@ export async function deleteStaff(id: string) {
     revalidatePath('/admin/staff')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting staff:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }

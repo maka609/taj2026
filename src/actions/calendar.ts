@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const eventSchema = z.object({
   titleAr: z.string().min(3),
@@ -22,8 +23,7 @@ export async function getEvents() {
     })
     return { success: true, data: events }
   } catch (error) {
-    console.error('Error fetching events:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -43,11 +43,7 @@ export async function createEvent(data: EventInput) {
     revalidatePath('/admin/calendar')
     return { success: true, data: event }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error creating event:', error)
-    return { success: false, error: 'فشل في الإضافة' }
+    return handleActionError(error, 'فشل في الإضافة')
   }
 }
 
@@ -65,11 +61,7 @@ export async function updateEvent(id: string, data: Partial<EventInput>) {
       revalidatePath('/admin/calendar')
       return { success: true, data: event }
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return { success: false, error: error.errors[0].message }
-      }
-      console.error('Error updating event:', error)
-      return { success: false, error: 'فشل في التحديث' }
+      return handleActionError(error, 'فشل في التحديث')
     }
   }
 
@@ -79,7 +71,6 @@ export async function deleteEvent(id: string) {
     revalidatePath('/admin/calendar')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting event:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }

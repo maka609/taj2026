@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const messageSchema = z.object({
   name: z.string().min(3),
@@ -23,8 +24,7 @@ export async function getMessages(filter?: 'all' | 'read' | 'unread') {
     
     return { success: true, data: messages }
   } catch (error) {
-    console.error('Error fetching messages:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -38,8 +38,7 @@ export async function markAsRead(id: string) {
     revalidatePath('/admin/messages')
     return { success: true }
   } catch (error) {
-    console.error('Error marking message:', error)
-    return { success: false, error: 'فشل في التحديث' }
+    return handleActionError(error, 'فشل في التحديث')
   }
 }
 
@@ -52,8 +51,7 @@ export async function deleteMessage(id: string) {
     revalidatePath('/admin/messages')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting message:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }
 
@@ -73,10 +71,6 @@ export async function sendMessage(data: z.infer<typeof messageSchema>) {
     revalidatePath('/admin/messages');
     return { success: true, data: newMessage };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error sending message:', error);
-    return { success: false, error: 'فشل في إرسال الرسالة' };
+    return handleActionError(error, 'فشل في إرسال الرسالة');
   }
 }

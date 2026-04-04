@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const documentSchema = z.object({
   titleAr: z.string().min(3),
@@ -19,8 +20,7 @@ export async function getDocuments() {
     })
     return { success: true, data: documents }
   } catch (error) {
-    console.error('Error fetching documents:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -39,11 +39,7 @@ export async function createDocument(data: z.infer<typeof documentSchema>) {
     revalidatePath('/admin/downloads')
     return { success: true, data: document }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error creating document:', error)
-    return { success: false, error: 'فشل في الإضافة' }
+    return handleActionError(error, 'فشل في الإضافة')
   }
 }
 
@@ -57,11 +53,7 @@ export async function updateDocument(id: string, data: Partial<z.infer<typeof do
       revalidatePath('/admin/downloads')
       return { success: true, data: document }
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return { success: false, error: error.errors[0].message }
-      }
-      console.error('Error updating document:', error)
-      return { success: false, error: 'فشل في التحديث' }
+      return handleActionError(error, 'فشل في التحديث')
     }
   }
 
@@ -92,7 +84,6 @@ export async function deleteDocument(id: string) {
     revalidatePath('/admin/downloads')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting document:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }

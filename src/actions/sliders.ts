@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 // Schema للتحقق من البيانات
 const sliderSchema = z.object({
@@ -22,8 +23,7 @@ export async function getSliders() {
     })
     return { success: true, data: sliders }
   } catch (error) {
-    console.error('Error fetching sliders:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -48,11 +48,7 @@ export async function createSlider(data: z.infer<typeof sliderSchema>) {
     
     return { success: true, data: slider }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error creating slider:', error)
-    return { success: false, error: 'فشل في إضافة السلايدر' }
+    return handleActionError(error, 'فشل في إضافة السلايدر')
   }
 }
 
@@ -70,11 +66,7 @@ export async function updateSlider(id: string, data: Partial<z.infer<typeof slid
     
     return { success: true, data: slider }
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    console.error('Error updating slider:', error)
-    return { success: false, error: 'فشل في تحديث السلايدر' }
+    return handleActionError(error, 'فشل في تحديث السلايدر')
   }
 }
 
@@ -90,8 +82,7 @@ export async function deleteSlider(id: string) {
     
     return { success: true }
   } catch (error) {
-    console.error('Error deleting slider:', error)
-    return { success: false, error: 'فشل في حذف السلايدر' }
+    return handleActionError(error, 'فشل في حذف السلايدر')
   }
 }
 
@@ -108,7 +99,6 @@ export async function updateSliderStatus(id: string, active: boolean) {
 
       return { success: true }
     } catch (error) {
-      console.error('Error updating slider status:', error)
-      return { success: false, error: 'فشل في تحديث الحالة' }
+      return handleActionError(error, 'فشل في تحديث الحالة')
     }
 }

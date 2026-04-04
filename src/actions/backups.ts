@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { handleActionError } from "@/lib/error-handler";
 
 export async function getBackups() {
   try {
@@ -10,7 +11,7 @@ export async function getBackups() {
     });
     return { success: true, data: backups };
   } catch (error) {
-    return { success: false, error: "فشل في جلب النسخ الاحتياطية" };
+    return handleActionError(error, "فشل في جلب النسخ الاحتياطية");
   }
 }
 
@@ -22,7 +23,7 @@ export async function createBackup(label: string, fileUrl: string) {
     revalidatePath("/admin/unified-backup");
     return { success: true, data: backup };
   } catch (error) {
-    return { success: false, error: "فشل في إنشاء النسخة الاحتياطية" };
+    return handleActionError(error, "فشل في إنشاء النسخة الاحتياطية");
   }
 }
 
@@ -34,6 +35,6 @@ export async function deleteBackup(id: string) {
     revalidatePath("/admin/unified-backup");
     return { success: true };
   } catch (error) {
-    return { success: false, error: "فشل في حذف النسخة الاحتياطية" };
+    return handleActionError(error, "فشل في حذف النسخة الاحتياطية");
   }
 }

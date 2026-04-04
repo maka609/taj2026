@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { handleActionError } from '@/lib/error-handler'
 
 const gallerySchema = z.object({
   url: z.string().min(1),
@@ -18,8 +19,7 @@ export async function getGalleryImages() {
     })
     return { success: true, data: images }
   } catch (error) {
-    console.error('Error fetching gallery images:', error)
-    return { success: false, error: 'فشل في جلب البيانات' }
+    return handleActionError(error, 'فشل في جلب البيانات')
   }
 }
 
@@ -37,11 +37,7 @@ export async function createGalleryImage(data: z.infer<typeof gallerySchema>) {
       revalidatePath('/admin/gallery')
       return { success: true, data: image }
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return { success: false, error: error.errors[0].message }
-      }
-      console.error('Error creating gallery image:', error)
-      return { success: false, error: 'فشل في الإضافة' }
+      return handleActionError(error, 'فشل في الإضافة')
     }
 }
 
@@ -51,7 +47,6 @@ export async function deleteGalleryImage(id: string) {
     revalidatePath('/admin/gallery')
     return { success: true }
   } catch (error) {
-    console.error('Error deleting image:', error)
-    return { success: false, error: 'فشل في الحذف' }
+    return handleActionError(error, 'فشل في الحذف')
   }
 }

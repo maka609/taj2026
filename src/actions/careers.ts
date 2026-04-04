@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { handleActionError } from "@/lib/error-handler";
 
 const careerSchema = z.object({
   titleAr: z.string().min(3),
@@ -28,7 +29,7 @@ export async function getCareers() {
     });
     return { success: true, data: careers };
   } catch (error) {
-    return { success: false, error: "فشل في جلب الوظائف" };
+    return handleActionError(error, "فشل في جلب الوظائف");
   }
 }
 
@@ -49,10 +50,7 @@ export async function createCareer(data: CareerInput) {
     revalidatePath("/admin/careers");
     return { success: true, data: career };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    return { success: false, error: "فشل في إضافة الوظيفة" };
+    return handleActionError(error, "فشل في إضافة الوظيفة");
   }
 }
 
@@ -69,10 +67,7 @@ export async function updateCareer(id: string, data: Partial<CareerInput>) {
     revalidatePath("/admin/careers");
     return { success: true, data: career };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message }
-    }
-    return { success: false, error: "فشل في تحديث الوظيفة" };
+    return handleActionError(error, "فشل في تحديث الوظيفة");
   }
 }
 
@@ -84,7 +79,7 @@ export async function deleteCareer(id: string) {
     revalidatePath("/admin/careers");
     return { success: true };
   } catch (error) {
-    return { success: false, error: "فشل في حذف الوظيفة" };
+    return handleActionError(error, "فشل في حذف الوظيفة");
   }
 }
 
@@ -97,6 +92,6 @@ export async function updateCareerStatus(id: string, active: boolean) {
       revalidatePath("/admin/careers");
       return { success: true };
     } catch (error) {
-      return { success: false, error: "فشل في تحديث الحالة" };
+      return handleActionError(error, "فشل في تحديث الحالة");
     }
 }
