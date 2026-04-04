@@ -174,15 +174,19 @@ async function handleMiddleware(req: NextRequest & { auth?: unknown }) {
   // Get locale from cookie
   const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
 
-  // Strict Security for Admin & Dashboard Pages (TEMPORARILY DISABLED FOR PREVIEW)
-  /*
+  // Strict Security for Admin & Dashboard Pages
   if (isAdminPage || isDashboardPage) {
     if (!isAuth) {
       const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
       return Response.redirect(new URL(`/${locale}/portal/login`, req.nextUrl));
     }
+
+    // Role-based protection for Admin pages
+    if (isAdminPage && req.auth.role !== 'ADMIN') {
+        const locale = req.cookies.get('NEXT_LOCALE')?.value || 'ar';
+        return Response.redirect(new URL(`/${locale}`, req.nextUrl));
+    }
   }
-  */
 
   // Handle Root Page (Splash Screen)
   if (isRootPage) {
